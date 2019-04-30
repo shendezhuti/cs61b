@@ -1,2 +1,101 @@
 cs61b听课笔记&问题
 
+2019/4/30
+1.course overview & using objetcts
+
+Goal of cs61b
+1)learning efficient data structure&algorithms
+2)designing&writing large programs
+3)understanding&designing data abstraction &interfaces
+4)learning java
+
+objected-oriented programming
+object: a repository of data
+class: type of object
+method: procedure of function that operates on an object
+Inheritence: A class may inherit properties from a more general class
+	shoppingList inherit from list
+
+polymorhism: one method works on several classes, even if the classes need different implementions 
+	e.g. "additem" method on every kind of List, though adding item to a shoppinglist is different from a shopping cart
+
+ojbect-oriented: each object knows its own class & method 
+
+Java 
+variable: you must declare them and their type
+		int x;
+		x=1;
+
+does 2 things:
+(1)allocates memory to store on integer, type "int".
+(2)names variable "x".			
+
+variables also used to reference objects
+
+2 ways to get classes:
+(1)use one defined by somebody else. Java has tons 
+(2)define your own.					
+
+String myString;	<-varibale (not object)
+		mySring=new String();
+2 steps:
+		new String() is a constructor
+		assignment "=" causes myString to reference the object
+
+java programs must be compiled before you can run them
+
+Java  Java program(.java) -javac-> .class files -java-> answer  
+													JVM do the job
+
+Object & Constructors
+String s;
+String s2=s;
+s="Yow!"
+s2="Yow!" 
+
+s2=new String(s) 有五步操作
+(1)look where s points
+(2)follows reference to string object
+(3)reads string 
+(4)consturct new string w/copy of character
+(5)make s2 reference new String
+
+Methods
+s2=s.toUppercase();
+
+I/O class & object
+Object in System class for interacting with a user
+System.out is a Printstream object that output to the screen
+System.in is an Inputstream object that reads from the keyboard 这里其实是指reference
+
+To use Java libraries, other than java.lang, we "import" them 
+java.io includes InputStreamReaders, BufferedReader, etc .
+
+2.defining classes
+
+unix/vim help session  真滴羡慕ucb的学生
+Fields: variable stored in objects  
+		aka instance variavle 
+
+Defalut constructor takes no parameter, does no initializing
+只写一个constructor defalut constructor gone
+
+The "this" keywod 
+amanda.introduce() implicitly pass an object (amanda) as a parameter called "this"
+local variable 相比于 field varibale more priority(更具有优先级)
+
+IMPORTANT: You cannot change the value of "this"
+this.amanda; -> compiler error
+
+the "static" keyword
+static field: a single variable shared by a whole class of objects 
+also called class variable
+
+System.in & System.out are static fields
+
+static method: does not implicitly pass an object as a parameter
+
+IMPORTANT: In a tatic method,there is no "this"!!
+referencing "this" ->compile-time-error
+
+
