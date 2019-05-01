@@ -95,7 +95,176 @@ System.in & System.out are static fields
 
 static method: does not implicitly pass an object as a parameter
 
-IMPORTANT: In a tatic method,there is no "this"!!
+IMPORTANT: In a static method,there is no "this"!!
 referencing "this" ->compile-time-error
 
 
+3.Types: conditions
+byte: 8-bit integer -128-127
+short: 16-bit -32768-32767
+int: 32bit 
+long: 64bit 
+double: A 64-bit floating-point number 
+float: 32-bit 
+boolean: "true" or "false"
+char: A Character23
+	long x=43L;
+	double & float values must have a decimal point.
+	double y=18.0;
+	float f=43.9f;
+
+	char c='h';
+
+					object type  		primitive types 
+contains a    		reference			value
+how defined	  		class definition	built into java
+how initialized?	Constructors 		defalut
+how used			Methods 			operators 
+
+java.lang library :
+		--Math class
+		x=Math.abs(y);  x=Math.sqrt(y);
+		--Interger class
+		int x=Integer.parseInt("1998");
+		--Double class
+		double d=Double.parseDouble("3.14");
+
+	Integer can be assigned to variables of larger types
+		int i=43;
+		long l=43;
+		l=i ; 
+		i=l;		//compiler error
+		i=(int)l;
+
+	Boolean values 
+		"true" or "false"
+
+CONDITIONALS
+	if(boolValue){
+	statements;
+	}
+
+	boolean pass=score>=75;
+
+THE "return" KEYWORD
+
+"return" causes a method to end immediately 
+control returns to the calling method
+
+return is means by which a function returns a value;
+
+function: method declared to return a non-void type
+
+Loops 
+"while" loops 
+public static boolean isPrime(int n){
+	int divisor=2;
+	while(divisor<n){
+	if(n%divisor==0){
+		return false;
+	}
+	divisor++;
+	}
+	return true;
+}	
+
+Iteration: a pass through the loop body
+if n<=2, the loop body won't iterate ever once
+
+"for" loop
+for(initialize;condition;next){
+	statements;
+}		
+
+Arrays 
+An object storing a numbered list of variables 
+Each is a primitive type or reference
+
+char[]c; //reference to array(any length) of characters
+c=new char[4];
+c[0]='b';
+c[3]='e';
+c[4]='s'; //run-time error
+
+Field "c.length"
+
+Primes Revisited
+Sieve of Eratosthenes
+
+public staticvoid printPrimes(int n){
+	boolean []prime= new boolean[n+1];
+	for(int i=2;i<=n;i++){
+	prime[i]=true; //prime until proven composite
+	}
+	for(int divisor=2;divisor*divisor<=n;divisor++){
+	if(prime[divisor]){
+		for(int i=2*divisor;i<=n;i=i+divisor){
+		prime[i]=false;
+		}
+	}
+	}
+}
+
+Muti-dimensional Arrays
+2D array: Array of reference to arrays
+
+Pascal's Triangle  
+
+Loop & arryas II
+Aytimatic Array Construction
+int [][]table=new int[x][y];
+
+Initializers: 
+	Human[]b={amanda,rish,new Human{"pdob"}};
+
+int[]a,b,c; //all reference arrays
+int a [],b,c[][]; // a is 1D;c is 2D;b is not array
+int [] a, b[];  // a is 1D; b is 2D;
+
+int []b[]= new int [3][];
+int []b[]=new int [][3];  compile error
+
+when you construct array of objects, 
+java does not construct the objects 
+
+main() parameter
+List of command-line arguments
+
+"do" loops
+
+do{
+	s=keybd.readLine();
+	process(s);
+}while(s.length>0)
+
+s=keybd.readLine();
+while(s.length()>0){
+	process(s);				disadvantage:如果duplicate code有几百行就gg了
+	s=keybd.readLine();
+}
+
+while(true){
+	s=keybd.readLine();
+	if(s.length()==0){
+	break;					disadvantage : illegial 
+	}	
+	process(s);
+}
+
+
+"go to" is harmful ?
+
+continue
+(1)only applies to loops
+(2)jumps to end of loop body but another iteration commerence if loop condition satisfied
+
+CONSTANTS
+"final" keyword: value that can never be changed
+bad: if(month==2) 
+good: public static int February=2;
+	 if(month==February)
+
+for any array x, "x.length" is a "final" field	
+
+hw2错点：
+静态方法不能调用非静态方法！！！ 
