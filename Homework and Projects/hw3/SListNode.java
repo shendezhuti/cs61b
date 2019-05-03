@@ -32,4 +32,17 @@ class SListNode {
   SListNode(Object obj) {
     this(obj, null);
   }
+  public Object getItem(){
+    return item;
+  }
+
+  public SListNode getNext(){
+    return next;
+  }
+  public void setItem(Object newitem){
+      item=newitem;
+  }
+  public void setNext(SListNode newnext){
+    next=newnext;
+  }
 }

@@ -65,22 +65,24 @@ class Date {
    */
   public static int daysInMonth(int month, int year) {
     int normalday=28;
+    int thirtyday=30;
+    int thirtyoneday=31;
     if(isLeapYear(year)){
         normalday=29;
     }
     switch (month){
           case 4:
-            return 30;
+            return thirtyday;
              case 6:
-            return 30;
+            return thirtyday;
              case 9:
-            return 30;
+            return thirtyday;
              case 11:
-            return 30;
+            return thirtyday;
           case 2:
             return normalday; 
           default :
-          return 31;
+          return thirtyoneday;
      }  
 
   }

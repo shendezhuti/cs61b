@@ -1,3 +1,6 @@
+
+
+
 cs61b听课笔记&问题
 
 2019/4/30
@@ -268,3 +271,576 @@ for any array x, "x.length" is a "final" field
 
 hw2错点：
 静态方法不能调用非静态方法！！！ 
+
+Lists  	Array-based lists
+Advantage: very fast access of each item
+2 disadvantage: 
+ 			（1)insert item at beginning or middle 
+ 				takes time proportional to length of array
+ 			 (2) array has a fixed length 
+
+ LINKED LISTS   (a recursive date type)
+ Make up of nodes. Each node has:
+ (1)an item
+ (2)a reference to next node in list
+
+ public class ListNode {
+ 	public int item;
+ 	public ListNode next;
+ }
+
+ l1.next=l2;
+ l2.next=l3;
+ l3.next=null;
+
+ public ListNode(int i, Listnode n){
+ 	item=i;
+ 	next=n;
+
+ }
+ public ListNode(int i){
+ 	item=i;
+ 	next=null;
+ }
+
+ ListNode l1=new ListNode(7,new ListNode(0,new ListNode(7)));
+
+ Linked Lists vs array lists
+
+ advantage of linked lists
+ Inserting item into middle of linked list takes constant time
+ if you have a ref to previous node 
+
+List can keep growing out until memory runs out
+
+Insert a new item:
+public void insertAfter(int item){
+	next=new ListNode (item,next);  //可以画一个图理解 注意里面的两个next是不一样的
+}
+
+disadvantage: Finding  nth item of a linkedlist
+		start at head, walk n-1 nodes.
+
+List Of Objects  reference any object
+
+public class  SListNode {		s->singlelinkedlist
+	public object item;
+	public SlistNode next;
+}
+
+A List class
+problem with SListNodes:
+(1)Insert new item at beginning of list:  x=new SListNode("soop",x);
+(2) how do you represent an empty list?
+x=null; x.insertAfter(item) //run-time error
+
+solution: separate SList class maintain the head of the list
+
+public class SList{
+	private SListNode head;
+	private int size;
+	public SList(){
+	head==null;
+	size=0;
+	}
+	public void insertFront(Object item){
+		head=new SListNode(item,head);
+		size++;
+	}
+}
+
+The "public" and "private" keywords
+private method or field: invisible & inaccessible to other classes
+why????
+
+(1)to prevent data from being corrupted by other classes
+(2)you can improve the implementation without causing other classes to fail
+
+The interface of a class: prototypes for public methods  ->java code
+			plus description of their behaviors: plain English
+
+Abstract Data Type (ADT): A class with well-defined interface, but implementation detail are hidden from other classes
+
+Invariant:  A fact about a data strucure that is always true
+			"A Date object always stores a valid date"
+		Enforced by allowing access only through method calls
+
+Not all classed are ADTs! some classes are data storage units, no invartants;field can be public 
+
+The SList ADT
+another advantage of SList class: it enforces 2 invariants;
+(1) "size" is always correct
+(2)A list is never circularly linked, 
+Both goals accomplish because only SList methods can change the lists.
+	SList ensure this:
+	(1)The fields of SList(head & size) are "private".
+	(2)No method of SList returns an SListNode .
+
+DOUBLY-LINKED LISTS
+
+Inserting/deleting at front of list is easy.
+						end of lists takes a long time;
+
+class DlistNode{
+	Object item;
+	DListNode next;
+	DListNode prev;
+}
+
+class DList{
+	private DListNode head;
+	private DListNode tail;
+	long size;
+}
+
+insert & delete items at both ends in constant running time
+
+Removes the tail node (at list 2 items in DList):
+	tail.prev.next=null;
+	tail=tail.prev;
+
+Sentinel: A special node that does not represent an item.
+
+DList invariants (with sentinel)：
+(1)for any DList d, d.head!=null
+(2)For any DList x, x.prev!=null;
+(3) "  "  " " , x.next!=null;
+(4)"	" "	", if x.next==y,then y.prev==x;
+(5) "	" "	", if x.prev==y,then y.next==x;
+(6) A DLists "size" variable is DListNodes, not couting sentinel ,accessible from sentinel by sequence of "next" s .
+
+public long size(){
+	
+}
+Empty DList: Sentinel prev & next field points to itself
+
+public void removeBack(){
+	if (head.prev!=head){
+	head.prev=head.prev.prev;
+	head.prev.next=head;
+	size++;
+	}
+}
+
+
+The stack and the heap
+
+the heap stores all object; include all arrays & class variables
+the stack stores the local variable ,including parameter
+when a method is called, java creates a stack frame (aka activation record);
+stores the parameters & local variables
+stack of stack frames 
+
+gc affect the heap only
+
+when a method finished, its stack frame is erased.
+Method "Thread.dumpStack()" for debugging
+
+Parameter passing 
+Java passes all parameter by value: copied 
+
+class IntBox{
+	static void doNothing(int x){
+	x=2;
+	}
+}
+
+int a=1;
+doNothing(a);
+
+when parameter is a reference, the reference is copied, but the object is shared.
+
+Common programming error
+
+static void badSet4(IntBox ib){
+	ib=new IntBox();
+	ib.i=4;
+}
+
+Binary Search 
+Searches a sorted array.
+If we find "findme", return its array index;
+otherwise,return faliure.
+
+Recursion base cases:
+(1)findMe==middle element: return its index
+(2)subarray of length zero: return failure
+
+Monday: President's Day
+no lecture/office hours/discussion sections
+
+INHERENTENCE
+
+public class TailList extends SList{
+	// "head" & "size" inherited from SList
+	private SListNode tail;
+
+}
+
+TailList is subclass of SList
+SList is the superclass ot TailList
+A subclass can modify a superclass 3 ways
+(1)It can declare new fields
+(2)"	" "	" "	"	 new methods
+(3)" " override old methods with new implementations
+
+public void insertEnd(Object obj){
+	//you solution to lab3
+}
+isEmpty(), length(), nth(), toString() are inherited from SList
+
+Inheritance & construnctors 
+Java execute TailList constructor before it executes any code.
+
+public TailList(){
+	// SList()  set size=0, head=null;
+	tail=null;
+}
+
+public TailList(int x){
+	super(x);  <- must be first statement in constructor
+	tail=null;
+}
+
+Invoking Overriden methods 
+public void insertFront(Object obj){
+	super.insertFront(obj);
+	if(size==1){
+	tail=head;
+	}
+}
+
+The "protected" keyword
+
+public class SList{
+	protected SListNode head;
+	protected int size;
+}
+
+"protected" field is visible to declaring class & all its subclass but no others.
+"private" fields aren't visible to subclass
+
+Class Hierarchies 
+				Object  
+			String   worker
+		student  ta 	professor
+
+Dynamic Method Lookup
+		Every TailList is an SList!!!
+	SList s= new TailList();
+	TailList t=new SList();  // Compile-time error!
+
+Static type: the type of a variable
+dnamic type: the class of the object the variable reference
+
+when we invoke overridden method, Java calls methods for ojbect dynamic type, regardless of static type 
+
+SList s=new TailList();
+s.insertEnd(obj); //calls TailList.insertEnd();
+s=new SList();
+S.insertEnd(obj); 	//calls SList.insertEnd();
+
+WHY DYNAMIC METHOD LOOKUP MATTERS
+Method that sorts an SList using only SList method calls
+Method that sorts an TailList too.
+
+Subtltties of Inheritance
+(1) new method in TailList--eatTail();
+		TailList t=new TailList();
+		t.eatTail();
+
+		SList s=new TailList();
+		s.eatTail(); 	//compile-time error
+Why? Not every sList has an "eatTail()" method.
+so Java can't use dynamic method lookup on s.
+
+(2) SList s;
+	TailList t= new TailList();
+	s=t;
+	t=s;		//compile-time error
+	t=(TailList) s;
+
+	s=new SList();
+	t=(TailList)s;	//runtime error : classcastException
+
+	int x=t.nth(1).intvalue();	//compile-time error
+	int y= ((Integer)t.nth(1)).intValue();
+
+(3) "instanceof" operator tells you whether object is of specfic class.
+	
+	if(s instanceof TailList){
+		+=(TailList) s;
+	}
+return false is s is null or does not reference to a TailList
+		true if s reference a TailList or subclass
+
+equals() every class has an equals() method.
+Default: inherit Object.euqals()
+		r1.equals(r2) same as "r1==r2"
+		run-time error if r1 is null
+
+Many classes override equals() to compare content.
+e.g Integer 
+	i1==i2 false ;
+	i1.equals(i2) true;
+
+	i2==i3 true   ;
+	i2.equals(i3) true;
+
+Four degrees of quality: 
+(1) reference equality, ==
+(2) Shallow structural equality :  fields are ==
+(3) deep structural equality : fields are .equals();
+(4) logical equality 
+	
+	"set" objects are "equals" if they contain some elements 
+	(even in different orders)
+
+	Fractions 1/3 and 2/6 are "equals".
+equals() may  test any of these 
+
+public class SList{
+	public boolean equals(Ojbect other){ not SList!!! signature must be the same as Object equals
+
+	if(!(other) instanceof SList){
+	return false;
+	}
+	SList o=(SList) other;
+	if(size!=o.size){
+	return false;
+	}
+	SListNode n1=head;
+	SLsitNode n2=o.head;
+	while(n1!=null){
+	if(!n1.item.equals(n2.item)){
+		return false;
+	}
+	n1=n1.next;
+	n2=n2.next;
+	}
+	return true;
+	}
+}
+
+"for each" Loops 
+Iterate through array elements
+	int []array={7,12,3,8,4,9};
+	for(int i:array){
+	System.out.print(i+"");
+	}
+
+
+TESTING 
+
+(1) Modular Testing   	
+	Test driver & stub 
+	a:test driver call the code, check results
+	b stubs: bits of code called by the code being tested
+
+(2)Integration Testing 
+	testing all components together
+
+	define interfaces well
+	learn to use a debugger.
+
+(3)	result verfication 
+	a: data structure integrity checkers
+	Inspect a datastructure & verify that all invariants are satisfied.
+
+	b: algorithms result checkers
+
+assertion: code that tests an invariant or a result.
+	assert x==3;
+	aserrt list.size==list.countLength();
+			"wrong SList size" + list.size;
+	turn them on: java -ea 
+	turn them  off:	 java -da  (greater speed)
+
+
+ABSTRACT CLASSES
+a class whose sole purpose is to be extended 
+public abstract class List{
+	protected int size;
+	public int length(){
+	return size;					//ADT(abstract data type)
+	}
+	public abstract void insertFront(Object item);
+}
+
+List myList;
+myList =new List(); // compile-time error
+Abstract method lacks an impletation 
+public class SList extends List{
+	//inherits "size"
+	protected SListNode head;
+	//inherits "length()"
+
+	public void insertEnd(Object item){
+		head=new SListNode(item,head);
+		size++;
+	}
+}
+
+A-non-abstract class may never 
+ contain an asbstract method
+ inherit one without providing an implementation
+
+ List myList=new SList();
+ myList.insertFront(obj);  compiles because everyList has an insertFront method
+ myList.head =   //compile-time error( not every List has a "head" field)
+
+ ((SList)myList).head=  //this complie and myList is still List static type while the expression
+ 								((SList)myList) is SList static type
+
+ An abstract class lets you define an interface for multiple class to share,
+ without defining any of them yet.
+
+one List sorter can sort every kind of List 
+
+public void listSort(List l){
+	
+}
+
+subclass: SLsit,DList,tailList
+TimeList 
+TransanctionList
+
+JAVA INTERFACE
+
+"interface" : public field method prototype & behaviors 
+
+"Java interface":  "interface" keyword. 
+
+Java interface is like abstract class. 2 differences
+(1) A class inherit from only one class
+	can "implement" (inherit from ) many Java interfaces 
+(2) A java interface cannot 
+	implement any methods 
+	include any field except "final static" constants
+	only contains method protoytpes & constants
+
+public interface Nokeable{
+	public void nuke();  //assumed abstract
+}
+
+public interface Comparable { // in java.lang
+	public int compareTo(Object o);
+}
+
+public class SList extends List implement Nukeable, Comparable {
+	pulibc void nuke(){
+		head=null;
+		size=0;
+	}
+
+	public int compareTo(Object o){
+		[return a number <0 if this<o,
+		return 0 if this.equals(o),
+		return >0 if this>0  ];
+	}
+}
+
+Nukeable n= new SList();
+Comparable c= (Comparable)n;
+
+Arrays class in java.util sorts arrays of comparable objects
+
+public static void sort(Object[]a) 
+
+A subinterface can have mmutiple superinterface.
+
+public interface NokeAndComparable extends Nokeable,Comparable{};
+
+JAVA PACKAGES 
+
+package: collection of classes, Java interfaces, & packages 
+			that trust each other.
+3 benefits (1)packages can contain hidden class not visible outside package
+			(2) classes can have fields & methods visible inside package only 
+			(3) different package can have class same name
+
+			java.awt.Frame  		photo.Frame
+
+	Examples 
+	(1) java.io 
+	(2) homework 4  uses "list" package containing DList & DListNode 
+	(3) java.awt.image Model
+
+Using Packages
+
+Fully-qualified name
+	java.lang.System.out.println(" ");
+import java.io.File;	//Can now refer to File
+import java.io.*; //everything in java.io
+
+Every program imports java.lang.*;
+java.awt.Frame.add(photo.Frame.canvas);
+
+Building Packages 
+/* list/SList.java */			/* list/SListNode.java */
+
+package list;					package list;
+
+public class SList{				class SListNode{
+	SListNode head;
+	int size;
+}
+
+"package" protection 
+between "private" and "protected" 
+
+A class or variable w/package protection is visible to any class in same package,but not any 
+thing outside the package (i.e. files oustside the directory).
+
+HW4: DListNode class is public 
+
+"prev" & "next" have package protetion, so application cannot corrupt DList ADT.
+
+public class must be declared in file named after class.
+"package" classes can appear in any  . java file
+
+Compiling and running must be done from ousside package
+	javac -g list/SList.java 
+	java list.sList
+
+
+"public "
+"protected"
+"default"(package)
+private	
+
+ITERATORS 
+
+public interface Iterator {
+	boolean hasNext();
+	Object next();
+	void remove(); //optional
+}
+
+An Iterator is like a boomark.
+
+can have many Iterators in some data structure
+
+Calling next() nth time return nth item in sequence.
+subsequent calls to next() throws an exception.
+hasNext():true iff more items to return 
+
+public interface Iterable {
+	Iterator iterator();
+
+}
+
+DS.iterate()   constructs a DSIteraotr for DS.
+
+"for each" loop iterates over item in data structure 
+
+for(Object o:l) {
+	System.out.println(o);
+}
+
+equivalent to:
+
+for(Iterator i=l.iterator();i.hasNext()){
+	Object o=i.next();
+	System.out.println(o);
+}
