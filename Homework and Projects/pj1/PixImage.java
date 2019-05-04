@@ -23,8 +23,13 @@ public class PixImage {
    */
 
 
-
-
+  private int width;
+  private int height;
+  private Pixel [][] pixel;
+  private final int dirX[]={-1,0,1};
+  private final int dirY[]={-1,0,1};
+  private final int GX[][]={{1, 0, -1}, {2, 0, -2}, {1, 0, -1}};
+  private final int GY[][]={{1, 2, 1}, {0, 0, 0}, {-1, -2, -1}};
   /**
    * PixImage() constructs an empty PixImage with a specified width and height.
    * Every pixel has red, green, and blue intensities of zero (solid black).
@@ -34,6 +39,14 @@ public class PixImage {
    */
   public PixImage(int width, int height) {
     // Your solution here.
+      this.width=width;
+      this.height=height;
+      pixel=new Pixel[width][height];
+       for(int i=0;i<width;i++){
+         for(int j=0;j<height;j++){
+            pixel[i][j]=new Pixel();
+         }
+       }
   }
 
   /**
@@ -43,7 +56,7 @@ public class PixImage {
    */
   public int getWidth() {
     // Replace the following line with your solution.
-    return 1;
+    return width;
   }
 
   /**
@@ -53,7 +66,7 @@ public class PixImage {
    */
   public int getHeight() {
     // Replace the following line with your solution.
-    return 1;
+    return height;
   }
 
   /**
@@ -65,7 +78,7 @@ public class PixImage {
    */
   public short getRed(int x, int y) {
     // Replace the following line with your solution.
-    return 0;
+    return pixel[x][y].getRed();
   }
 
   /**
@@ -77,7 +90,7 @@ public class PixImage {
    */
   public short getGreen(int x, int y) {
     // Replace the following line with your solution.
-    return 0;
+    return pixel[x][y].getGreen();
   }
 
   /**
@@ -89,7 +102,7 @@ public class PixImage {
    */
   public short getBlue(int x, int y) {
     // Replace the following line with your solution.
-    return 0;
+    return pixel[x][y].getBlue();
   }
 
   /**
@@ -107,6 +120,10 @@ public class PixImage {
    */
   public void setPixel(int x, int y, short red, short green, short blue) {
     // Your solution here.
+    if(red<0||red>255||green<0||green>255||blue<0||blue>255) return;
+    pixel[x][y].setRed(red);
+    pixel[x][y].setGreen(green);
+    pixel[x][y].setBlue(blue);
   }
 
   /**
@@ -120,7 +137,14 @@ public class PixImage {
    */
   public String toString() {
     // Replace the following line with your solution.
-    return "";
+    String image="";
+    for(int i=0;i<width;i++){
+      for(int j=0;j<height;j++){
+        image+="("+pixel[i][j].getRed()+pixel[i][j].getGreen()+pixel[i][j].getBlue()+")";
+      }
+      image+="\n";
+    }
+    return image;
   }
 
   /**
@@ -154,10 +178,58 @@ public class PixImage {
    */
   public PixImage boxBlur(int numIterations) {
     // Replace the following line with your solution.
-    return this;
+    if(numIterations<=0) return this;
+    PixImage oldImage=new PixImage(width,height);
+    oldImage.pixel=copyPixImage(oldImage.pixel,this.pixel);
+    PixImage newImage=null;
+    for(int i=0;i<numIterations;i++){
+      newImage=new PixImage(width,height);
+      update(newImage,oldImage);
+      oldImage=newImage;
+    }
+    return newImage;
   }
 
-  /**
+  private Pixel[][]copyPixImage(Pixel[][]newpixel, Pixel[][]oldpixel){
+    for(int i=0;i<width;i++){
+      for(int j=0;j<height;j++){
+        newpixel[i][j].setRed(oldpixel[i][j].getRed());
+        newpixel[i][j].setGreen(oldpixel[i][j].getGreen());
+        newpixel[i][j].setBlue(oldpixel[i][j].getBlue());
+      }
+    }
+    return newpixel;
+  }
+
+  private void update(PixImage newImage,PixImage oldImage){
+    for(int i=0;i<width;i++){
+      for(int j=0;j<height;j++){
+        if ((i == 0 && j == 0) || (i == 0 && j == width -1) || (i == height - 1 && j == 0) || (i == height - 1 && j == width - 1)) {
+            updateImage(newImage,oldImage,i,j,4);
+       }else if(i>0&&i<width-1&&j>0&&j<height-1){
+            updateImage(newImage,oldImage,i,j,9);
+       }else{
+            updateImage(newImage,oldImage,i,j,6);
+       }
+    }
+  }
+}
+  private void updateImage(PixImage newImage, PixImage oldImage,int x,int y,int num){
+      int redsum=0,greensum=0, bluesum=0;
+      for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            if(x+dirX[i]>=0&&x+dirX[i]<width&&y+dirY[j]>=0&&y+dirY[j]<height){
+              redsum+=oldImage.pixel[x+dirX[i]][y+dirY[j]].getRed();
+              greensum+=oldImage.pixel[x+dirX[i]][y+dirY[j]].getGreen();
+              bluesum+=oldImage.pixel[x+dirX[i]][y+dirY[j]].getBlue();
+            }
+        }
+      }
+      newImage.pixel[x][y].setRed((short)(redsum/num));
+      newImage.pixel[x][y].setGreen((short)(greensum/num));
+      newImage.pixel[x][y].setBlue((short)(bluesum/num));
+  }
+ /**
    * mag2gray() maps an energy (squared vector magnitude) in the range
    * 0...24,969,600 to a grayscale intensity in the range 0...255.  The map
    * is logarithmic, but shifted so that values of 5,080 and below map to zero.
@@ -199,12 +271,75 @@ public class PixImage {
    */
   public PixImage sobelEdges() {
     // Replace the following line with your solution.
+    Pixel [][] pix = new Pixel[width][height];
+    for(int i=0;i<width;i++){
+      for(int j=0;j<height;j++){
+        pix[i][j]=new Pixel();
+      }
+    }
+    pix=copyPixImage(pix,this.pixel);
+
+    for(int i=0;i<width;i++){
+      for(int j=0;j<height;j++){
+        long energy=getEnergy(GX,GY,pix,i,j);
+        short pixImage=mag2gray(energy);
+        this.pixel[i][j].setRed(pixImage);
+        this.pixel[i][j].setGreen(pixImage);
+        this.pixel[i][j].setBlue(pixImage);
+      }
+    }
     return this;
     // Don't forget to use the method mag2gray() above to convert energies to
     // pixel intensities.
   }
 
+  public long getEnergy(final int GX[][], final int GY[][], Pixel[][] pix, int x, int y) {
+      long gxRed=0,gyRed=0,gxGreen=0,gyGreen=0,gxBlue=0,gyBlue=0;
+        for(int i=0;i<3;i++){
+          for(int j=0;j<3;j++){
+              int xx=x+dirX[i],yy=y+dirY[j];
+              if((xx<=0&&yy<=0)|| (xx <= 0 && yy >= height) || (xx >= width -1 && yy <= 0) || (xx >= width - 1 && yy >= height)) {
+                  if(xx<0){
+                    xx=0;
+                  }else if(xx>=width){
+                    xx=width-1;
+                  }
+                  if(yy<0){
+                    yy=0;
+                  }else if(yy>=height){
+                    yy=height-1;
+                  }
+             }else if(xx<0||xx>=width){
+                  if(xx<0){
+                    xx=xx+1;
+                  }else{
+                    xx=xx-1;
+                  }
+             }else if (yy < 0 || yy >= height) {
+               if (yy < 0) {
+                yy = yy + 1;
+               } else {
+                yy = yy - 1;
+               }
+             }
+             gxRed += (long)GX[i][j] * (long)pix[xx][yy].getRed();
+             gyRed += (long)GY[i][j] * (long)pix[xx][yy].getRed();
+             gxGreen += (long)GX[i][j] * (long)pix[xx][yy].getGreen();
+             gyGreen += (long)GY[i][j] * (long)pix[xx][yy].getGreen();
+             gxBlue += (long)GX[i][j] * (long)pix[xx][yy].getBlue();
+             gyBlue += (long)GY[i][j] * (long)pix[xx][yy].getBlue();
 
+        }
+      }
+     long energy=calEnergy(gxRed,gyRed,gxGreen,gyGreen,gxBlue,gyBlue);
+      return energy;
+  }
+  private long calEnergy(long gxRed, long gyRed, long gxGreen, long gyGreen, long gxBlue, long gyBlue) {
+    long s=gxRed*gxRed+gyRed*gyRed;
+         s += gxGreen * gxGreen + gyGreen * gyGreen;
+        s += gxBlue * gxBlue + gyBlue * gyBlue;
+          return s;
+  }
   /**
    * TEST CODE:  YOU DO NOT NEED TO FILL IN ANY METHODS BELOW THIS POINT.
    * You are welcome to add tests, though.  Methods below this point will not
