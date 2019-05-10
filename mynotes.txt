@@ -830,11 +830,11 @@ public interface Iterable {
 
 }
 
-DS.iterate()   constructs a DSIteraotr for DS.
+DS.iterate()   constructs a DSIteraotr for DS.  
 
 "for each" loop iterates over item in data structure 
 
-for(Object o:l) {
+for(Object o:l) {   // l-> SList implements Iterable
 	System.out.println(o);
 }
 
@@ -844,3 +844,185 @@ for(Iterator i=l.iterator();i.hasNext()){
 	Object o=i.next();
 	System.out.println(o);
 }
+
+EXCEPTION
+
+Run-time error:Java "throw an exception"
+(Exception object).  Prevent the error by "catching" the Exception.
+purpose: Copying with Errors
+try{
+	f=new FileInputStream("cs61b/pj2.solution");
+	i=f.read();
+}catch(FileNotFoundException e1){	e1-> variable declaration
+	System.out.println(e1);		Exception handlers
+}
+	catch(IOException e2){	both e1 and e2 are subclass of Exception
+	f.close();					
+	}
+
+(a) executes the code inside "try" clause.
+(b) if "try" code executes normally skip "catch" classes.
+(c) if "try" code throws an exception; do not finish the "try" code.
+(d) Jump to first "catch" clause that matches exception;
+	executes.		"match":exception object thrown is same class/subclass of the type in "catch" clauses
+
+Purpose#2 : Escapsing a Slinking ship
+
+throw your own exception 
+
+public class ParseException extends Exception {}
+				distinguishable from other types of exceptions
+
+public ParseTree parseExpression()throws ParseException{
+	[loops]									required!!
+	if(something wrong){
+		throw new ParseException();
+	}									
+}				
+
+Different from "return"?
+1.do not return anything
+2.an exception can propagate several stack frames down the stack .
+
+public ParseTree parse()throw ParseException,DumbCodeException{
+	[loops and code]
+	p=parseExpression();
+	[more code]
+}
+
+public void compile(){
+	ParseTree p;
+	try{
+	p=parse();
+	p.toByteCode();
+	}catch(ParseException e1){
+
+	}
+	catch(DumbCodeException e2){
+
+	}
+}
+
+
+Checked and unchecked Throwables
+
+											Throwable
+							excpetion 											error
+	IOException						RunTimeException					assertionError		virtualMachineError
+			    		classcastException					NullPointerExcetpion				outofMemoryError
+
+catching an error is rarely appropriate
+
+unchecked Throwables do not require "throws" clause
+All exceptions except RunTimeException are checked
+
+when a methods calls a method taht can throw a checekedexception
+(1)it can catch the exception the exception,or 
+(2)it throws same exception itself.
+
+the finally keyword
+
+f=new FileInputStream("filename");
+try{
+	statement x;
+	return 1;
+}catch(IOException e){
+	e.printStackTrace();	<- when exception is constructed,i taks a snapshot of stack
+	return 2;
+}finally {
+	f.close();
+}
+
+if "try" statement begins, the "finally" clause will excute at the end, no matter what!
+
+It statement x causes no exception-> "finally" clause executed, 1 returnred.
+
+If statement causes IOException -> "catch"clause excutes,then "finally" clauses 2 return
+
+If statement causes some other exception -> "finally" "excutes",then exception continues down the stack
+
+Exception throw in "catch" clauses terminate the "catch" clauses, execute "finally",exception continues down stack
+
+Exception throw in "finally" clause: replace old exception, "finally" clause & method end
+
+Exception constructors
+
+Convention: Most Throwables have 2 constructors
+
+class MyException extends Exception {
+	pulibc MyException (){super();}
+	public MyException(String s){super(s);}	error message
+}
+
+error message
+
+printed if it propagates out of main();
+can be read by Throwable.getMessage().
+
+Generics 
+
+declare general class that produces special object
+SList for String, SList for Integers, only SList class
+SList takes a type parameter. 
+class SListNode<T> {
+	T item=;
+	SListNode<T> next;
+
+	SListNode(T i, SListNode<T> n){
+		item=i;
+		next=n;
+	}
+}
+public class SList<T>{	<- T is formal type parameter
+	SListNode<T> head;
+	public void insertFront(T item){
+	head=new SListNode<T>(item,head);
+
+	}
+}
+
+create an SList of Strings:
+	SList<String> l=new SList<String> ();		<-String is an actully tpye parameter
+	l.insertFront("hello");
+	String s= l.front().item();
+
+Advantages: Compiler ensures at compile time that nothing but strings enters your SList<String> . 
+Easier to debug than ClassCastExceptions much later!
+in java Generic is only for Object 
+
+Field SHADOWING
+
+field can be "shaddowed" in subclass 
+different from overrding .
+
+choice at methods dictated by dynamic type
+choice of fields dictated by static type
+
+class super{				class Sub extends super{
+									int x=4;	
+	int x=2;						inf (){
+									return 4;	
+	int f(){					}
+	return 2;
+	}
+}
+	
+Sub sub=new Sub();
+Super supe=sub;
+int i;
+i=supe.x;		//2
+i=sub.x;		//4
+i=((super)sub).x //2
+i=((sub)).x;  //4
+
+Shadowing is a nuisance 
+
+static methods follow same shadowing rules as fields.
+
+"final" methods & classes 
+
+"final" method-> cannot be overridden 
+"final" class -> cannot be be extend 
+
+Game Tree Search  Tic Tac Toe  google it!
+

@@ -29,9 +29,10 @@ public class RunLengthEncoding implements Iterable {
    *  Define any variables associated with a RunLengthEncoding object here.
    *  These variables MUST be private.
    */
-
-
-
+  private PixImage pix;
+  private int width;
+  private int height;
+  private DList list;
 
   /**
    *  The following methods are required for Part II.
@@ -48,6 +49,9 @@ public class RunLengthEncoding implements Iterable {
 
   public RunLengthEncoding(int width, int height) {
     // Your solution here.
+    this.width=width;
+    this.height=height;
+    list=new DList();
   }
 
   /**
@@ -74,6 +78,16 @@ public class RunLengthEncoding implements Iterable {
   public RunLengthEncoding(int width, int height, int[] red, int[] green,
                            int[] blue, int[] runLengths) {
     // Your solution here.
+      this.width=width;
+      this.height=height;
+      for(int i=0;i<runLengths.length;i++){
+        int []item=new int[4];
+        item[0]=runLengths[i];
+        item[1]=red[i];
+        item[2]=green[i];
+        item[3]=blue[i];
+        list.insertEnd(item);
+      }
   }
 
   /**
@@ -85,7 +99,7 @@ public class RunLengthEncoding implements Iterable {
 
   public int getWidth() {
     // Replace the following line with your solution.
-    return 1;
+    return this.width;
   }
 
   /**
@@ -96,7 +110,7 @@ public class RunLengthEncoding implements Iterable {
    */
   public int getHeight() {
     // Replace the following line with your solution.
-    return 1;
+    return this.height;
   }
 
   /**
@@ -108,7 +122,7 @@ public class RunLengthEncoding implements Iterable {
    */
   public RunIterator iterator() {
     // Replace the following line with your solution.
-    return null;
+    return new RunIterator(list);
     // You'll want to construct a new RunIterator, but first you'll need to
     // write a constructor in the RunIterator class.
   }
@@ -121,8 +135,23 @@ public class RunLengthEncoding implements Iterable {
    */
   public PixImage toPixImage() {
     // Replace the following line with your solution.
-    return new PixImage(1, 1);
-  }
+    PixImage pixImage=new PixImage(width,height);
+    int x=0,y=-1;
+    RunIterator iter=this.iterator();
+    while(iter.hasNext()){
+      int[]item=iter.next();
+      int num=item[0],red=item[1],green=item[2],blue=item[3];
+      for(int i=0;i<num;++i){
+        y=y+1;
+        if(y>=height){
+          x=x+1;
+          y=y % height;
+        }
+        pixImage.setPixel(x,y,(short)red,(short)green,(short)blue);
+      }
+    }
+    return pixImage;
+  } 
 
   /**
    *  toString() returns a String representation of this RunLengthEncoding.
@@ -135,7 +164,15 @@ public class RunLengthEncoding implements Iterable {
    */
   public String toString() {
     // Replace the following line with your solution.
-    return "";
+    //return "";
+    RunIterator iter=this.iterator();
+    String s="";
+    while(iter.hasNext()){
+      int[]item=iter.next();
+      s+="|red,green,blue,num:"+item[1]+","+item[2]+","+item[3]+","+item[0]+"|";
+      s+="\n";
+    }
+    return s;
   }
 
 
@@ -155,7 +192,36 @@ public class RunLengthEncoding implements Iterable {
   public RunLengthEncoding(PixImage image) {
     // Your solution here, but you should probably leave the following line
     // at the end.
+    changeImageToList(image);
     check();
+  }
+  public void changeImageToList(PixImage image){
+    this.width=image.getWidth();
+    this.height=image.getHeight();
+    this.list=new DList();
+    for(int i=0;i<width;i++){
+      for(int j=0;j<height;j++){
+        int []item=new int[4];
+        item[0]=1;
+        item[1]=(int)image.getRed(i,j);
+        item[2]=(int)image.getGreen(i,j);
+        item[3]=(int)image.getBlue(i,j);
+        list.insertEnd(item);
+      }
+    }
+    DListNode cur=list.getHead();
+    DListNode p=cur.next;
+    while(cur!=null&&p!=list.head){
+      int count=1;
+      while(p!=list.head&&p.item[1]==cur.item[1]){
+        count++;
+        p=p.next;
+      }
+      cur.item[0]=count;
+      cur.next=p;
+      cur=p;
+      p=p.next;
+    }
   }
 
   /**
@@ -165,6 +231,21 @@ public class RunLengthEncoding implements Iterable {
    */
   public void check() {
     // Your solution here.
+    DListNode cur=list.getHead();
+    int length=cur.item[0];
+    boolean flag=true;
+    while(cur!=list.head&&cur.next!=list.head){
+     if(cur.item[1]==cur.next.item[1]||cur.item[2]==cur.next.item[2]||cur.item[3]==cur.next.item[3]){
+        flag=false;
+        break;
+     }
+     cur=cur.next;
+     length+=cur.item[0];
+    }
+    if(!flag||length!=width*height){
+      System.err.println("run-length encoding is not right");
+      System.exit(0);
+    }
   }
 
 
@@ -188,6 +269,119 @@ public class RunLengthEncoding implements Iterable {
   public void setPixel(int x, int y, short red, short green, short blue) {
     // Your solution here, but you should probably leave the following line
     //   at the end.
+    int position=y*width+x+1;
+    DListNode current,current_left,current_right;
+    current=list.getHead();
+     int []newitem=new int[4];
+        newitem[0]=1;
+        newitem[1]=red;
+        newitem[2]=green;
+        newitem[3]=blue;  
+    if(list.size==1){//如果list只有一个结点
+       if(position==1){//恰好postion为1 才能插入
+        current.item[1]=red;
+        current.item[2]=green;
+        current.item[3]=blue;
+       }
+    }else{//进入一个list有多个结点的情况
+      boolean left=false,right=false;
+      int front=0,end=0;
+      end=current.item[0];
+      for(int i=1;i<=list.size-1;i++){//找到position对应的那个DListNode
+        if(position<=end){
+          break;
+        }else{
+            current=current.next;
+            front=end;
+            end+=current.item[0];
+        }
+        if(end-front==1){//此种情况表示该DListNode中的pixel只有一个
+          current_left=current.prev;
+          current_right=current.next;
+          current.item[1]=red;
+          current.item[2]=green;
+          current.item[3]=blue;
+          if(current_left!=list.head&&current_left.item[1]==current.item[1]){
+            left=true;
+          }
+          if(current_right!=list.head&&current_right.item[1]==current.item[1]){
+            right=true;
+          }
+          if(left==true&&right==false){
+            current_left.item[0]++;
+            if(current_right==list.head){
+              list.removeEnd();
+            }else{
+              list.removeBetween(current_left);
+            }
+          }else if(left==false&&right==true){
+            current_right.item[0]++;
+            if(current_left==list.head){
+              list.removeFront();
+            }else{
+              list.removeBetween(current_left);
+            }
+          }else if(left==true&&right==true){
+            current_left.item[0]=current.item[0]+current_right.item[0];
+            list.removeBetween(current_left);
+            if(list.size>2){
+              list.removeBetween(current_left);
+            }else if(list.size==2){
+              list.removeEnd();
+            }
+          }else if(position-front==1){
+            current_left=current.prev;
+            current_right=current;
+            if(current.item[1]!=red){
+              if(current_left!=list.head&&current_left.item[1]==red){
+                current_left.item[0]++;
+                current_right.item[0]--;
+              }else{
+                if(current_left==list.head){
+                  current_left.item[0]--;
+                  list.insertFront(newitem);
+                }else{
+                  current.item[0]--;
+                  list.insertBetween(newitem,current_left);
+                }
+              }
+            }
+          }else if(position==end){
+            current_left=current;
+            current_right=current.next;
+            if(current.item[1]!=red){
+              if(current_right!=list.head&&current_right.item[1]==red){
+                current.item[0]--;
+                current_right.item[0]++;
+              }else{
+                if(current_right==list.head){
+                  current.item[0]--;
+                  list.insertEnd(newitem);
+                }else{
+                  current.item[0]--;
+                  list.insertBetween(newitem,current);
+                }
+              }
+            }
+          }else if(1<position-front&&position<end){
+              if(current.item[1]!=red){
+                current.item[0]=position-front-1;
+                list.insertBetween(newitem,current);
+                current_right=current.next;
+                int []newitem2=current.item;
+                newitem[0]=end-position;
+                list.insertBetween(newitem,current_right);
+              }
+          }
+
+        }
+
+
+      }
+    }
+    PixImage pixImage = this.toPixImage();
+    pixImage.setPixel(x, y, red, green, blue);
+    changeImageToList(pixImage);
     check();
   }
 
@@ -294,7 +488,7 @@ public class RunLengthEncoding implements Iterable {
     image1.setPixel(1, 0, (short) 42, (short) 42, (short) 42);
     doTest(rle1.toPixImage().equals(image1),
            "Setting RLE1[1][0] = 42 fails.");
-
+    
     System.out.println("Testing setPixel() on a 3x3 encoding.");
     setAndCheckRLE(rle1, 0, 1, 2);
     image1.setPixel(0, 1, (short) 2, (short) 2, (short) 2);

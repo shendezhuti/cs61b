@@ -1,0 +1,28 @@
+1.子类继承的要求 (1)method参数与method返回值要与父类的method定义一致
+				(2)子类中的method不能less accessible，意思是子类方法的访问性必须和父类一样或者更加friendier
+
+2.比如father类的remove方法和son类的remove方法不一样，father f=new son()之后f.remove是son的方法
+when we invoke overridden method, Java calls methods for ojbect dynamic type, regardless of static type 这个是老师上课的笔记 
+
+3.overload与继承和多态没关系 只是method碰巧有了一样的名字
+
+4.简单的说 多态是指variable reference 和object的类型可以不一样 比如 Animal mydog=new Dog();
+variable reference的类型是 Animal，但是我们在heap中创造的对象是Dog
+
+5.instance variable 没有被子类overridden 因为他们不需要，他们没有定义任何具体的行为
+
+6.只有构造器才必须把super放在第一行，method没有这个规定
+
+7.当子类继承父类时，什么会被继承过来：
+super类中的protected,public都可被子类继承，包括field 和 method.
+同时，父类的构造器不能被继承，但必须被子类构造器调用！
+
+8.shadowing 与 overrding 不一样，shadowing是指子类覆盖了父类中的field 或者静态方法，此时
+老师上课说过  choice at methods dictated by dynamic type
+			choice of fields dictated by static type
+即如果我们 Father f=new Son();  假设Father一个 int x=2 的field，son重写了这个field 并且 int x=4
+那么f.x=2  ((Son)f).x=4  
+
+9. "final" method-> cannot be overridden 
+ "final" class -> cannot be be extend 
+

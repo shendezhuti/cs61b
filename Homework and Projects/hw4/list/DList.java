@@ -52,6 +52,10 @@ public class DList {
    */
   public DList() {
     //  Your solution here.
+    Object item=new Object();
+    head=newNode(item,null,null);
+    head.next=head;
+    head.prev=head;
   }
 
   /**
@@ -79,6 +83,10 @@ public class DList {
    */
   public void insertFront(Object item) {
     // Your solution here.
+    DListNode newhead=newNode(item,head,head.next);
+    head.next.prev=newhead;
+    head.next=newhead;
+    size++;
   }
 
   /**
@@ -87,7 +95,10 @@ public class DList {
    *  Performance:  runs in O(1) time.
    */
   public void insertBack(Object item) {
-    // Your solution here.
+    DListNode newtail=newNode(item,head.prev,head);
+    head.prev.next=newtail;
+    head.prev=newtail;
+    size++;
   }
 
   /**
@@ -101,6 +112,7 @@ public class DList {
    */
   public DListNode front() {
     // Your solution here.
+    return head.next;
   }
 
   /**
@@ -114,6 +126,7 @@ public class DList {
    */
   public DListNode back() {
     // Your solution here.
+    return head.prev;
   }
 
   /**
@@ -128,6 +141,9 @@ public class DList {
    */
   public DListNode next(DListNode node) {
     // Your solution here.
+    if(node==null||node==back())return null;
+    
+    return node.next;
   }
 
   /**
@@ -142,6 +158,8 @@ public class DList {
    */
   public DListNode prev(DListNode node) {
     // Your solution here.
+    if(node==null||node==front())return null;
+    return node.prev;
   }
 
   /**
@@ -153,6 +171,11 @@ public class DList {
    */
   public void insertAfter(Object item, DListNode node) {
     // Your solution here.
+    if(node==null)return ;
+    DListNode oldnodeAfter=node.next;
+    node.next=newNode(item,node,oldnodeAfter);
+    oldnodeAfter.prev=node.next;
+    size++;
   }
 
   /**
@@ -164,6 +187,11 @@ public class DList {
    */
   public void insertBefore(Object item, DListNode node) {
     // Your solution here.
+    if(node==null)return ;
+        DListNode oldnodeBefore=node.prev;
+        node.prev=newNode(item,oldnodeBefore,node);
+        oldnodeBefore.next=node.prev;
+        size++;
   }
 
   /**
@@ -172,6 +200,15 @@ public class DList {
    */
   public void remove(DListNode node) {
     // Your solution here.
+    if(node==null)return;
+    // DListNode prev=prev(node);
+    // DListNode next=next(node); // 这里我犯了一个错误用了prev和next 上面说了prev和next当时头尾结点的时候返回null
+    DListNode prev=node.prev;
+    DListNode next=node.next;
+    next.prev=prev;
+    prev.next=next;
+    node.prev=node.next=null;
+    size--;
   }
 
   /**

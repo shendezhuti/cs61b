@@ -56,7 +56,7 @@ public class PixImage {
    */
   public int getWidth() {
     // Replace the following line with your solution.
-    return width;
+    return this.width;
   }
 
   /**
@@ -66,7 +66,7 @@ public class PixImage {
    */
   public int getHeight() {
     // Replace the following line with your solution.
-    return height;
+    return this.height;
   }
 
   /**
@@ -78,7 +78,7 @@ public class PixImage {
    */
   public short getRed(int x, int y) {
     // Replace the following line with your solution.
-    return pixel[x][y].getRed();
+    return this.pixel[x][y].getRed();
   }
 
   /**
@@ -90,7 +90,7 @@ public class PixImage {
    */
   public short getGreen(int x, int y) {
     // Replace the following line with your solution.
-    return pixel[x][y].getGreen();
+    return this.pixel[x][y].getGreen();
   }
 
   /**
@@ -102,7 +102,7 @@ public class PixImage {
    */
   public short getBlue(int x, int y) {
     // Replace the following line with your solution.
-    return pixel[x][y].getBlue();
+    return this.pixel[x][y].getBlue();
   }
 
   /**
@@ -121,9 +121,9 @@ public class PixImage {
   public void setPixel(int x, int y, short red, short green, short blue) {
     // Your solution here.
     if(red<0||red>255||green<0||green>255||blue<0||blue>255) return;
-    pixel[x][y].setRed(red);
-    pixel[x][y].setGreen(green);
-    pixel[x][y].setBlue(blue);
+    this.pixel[x][y].setRed(red);
+    this.pixel[x][y].setGreen(green);
+    this.pixel[x][y].setBlue(blue);
   }
 
   /**
