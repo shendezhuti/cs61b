@@ -9,6 +9,8 @@ import list.*;
 public class Set {
   /* Fill in the data fields here. */
 
+  private DList list;
+
   /**
    * Set ADT invariants:
    *  1)  The Set's elements must be precisely the elements of the List.
@@ -24,6 +26,8 @@ public class Set {
    **/
   public Set() { 
     // Your solution here.
+    list=new DList();
+
   }
 
   /**
@@ -33,7 +37,7 @@ public class Set {
    **/
   public int cardinality() {
     // Replace the following line with your solution.
-    return 0;
+    return list.length();
   }
 
   /**
@@ -44,9 +48,30 @@ public class Set {
    *
    *  Performance:  runs in O(this.cardinality()) time.
    **/
-  public void insert(Comparable c) {
+  public void insert(Comparable c) throws InvalidNodeException{
     // Your solution here.
+    if(cardinality()==0) {
+      list.insertFront(c);
+    }else{
+      ListNode node=list.front();
+      try{
+     while (c.compareTo(node.item()) != 0) {
+            if (c.compareTo(node.item()) > 0) { //如果反过来比较久需要强制转换node
+                 node = node.next();
+               } else {
+                  node.insertBefore(c);
+                  break;
+               }
+               if (!node.isValidNode()) {
+                   list.back().insertAfter(c);
+                   break;
+                 }
+            }
+          }catch(InvalidNodeException e){
+            e.printStackTrace();
+          }
   }
+}
 
   /**
    *  union() modifies this Set so that it contains all the elements it
@@ -63,10 +88,42 @@ public class Set {
    *  DO NOT MODIFY THE SET s.
    *  DO NOT ATTEMPT TO COPY ELEMENTS; just copy _references_ to them.
    **/
-  public void union(Set s) {
+  public void union(Set s) throws InvalidNodeException{
     // Your solution here.
-  }
+    if(s.cardinality()==0){
+      return ;
+    }else if(cardinality()==0){
+      ListNode cur=s.list.front();
+      while(cur.isValidNode()){
+        list.insertBack(cur.item());
+        cur=cur.next();
+      }
+      return ;
+    }
 
+    ListNode cur1=list.front();
+    ListNode cur2=s.list.front();
+    while(cur1.isValidNode()&&cur2.isValidNode()){
+       if (((Comparable)cur2.item()).compareTo(cur1.item()) < 0) { //注意这里需要强制转换
+        cur1.insertBefore(cur2.item());
+        cur2 = cur2.next();
+       }else if(((Comparable)cur2.item()).compareTo(cur1.item()) == 0){
+        cur1 = cur1.next();
+        cur2 = cur2.next();
+       }else if(((Comparable)cur2.item()).compareTo(cur1.item()) > 0){
+        cur1=cur1.next();
+       }
+
+     }
+       if(cur2.isValidNode()){
+          cur1=list.back();
+          while(cur2.isValidNode()){
+            cur1.insertAfter(cur2.item());
+            cur2=cur2.next();
+          }
+       }
+  
+  }
   /**
    *  intersect() modifies this Set so that it contains the intersection of
    *  its own elements and the elements of s.  The Set s is NOT modified.
@@ -80,8 +137,36 @@ public class Set {
    *  DO NOT CONSTRUCT ANY NEW NODES.
    *  DO NOT ATTEMPT TO COPY ELEMENTS.
    **/
-  public void intersect(Set s) {
+  public void intersect(Set s) throws InvalidNodeException{
     // Your solution here.
+    if(s.cardinality()==0){
+      list=new DList();
+      return ;
+    }else if(cardinality()==0){
+      return ;
+    }
+
+    ListNode cur1=list.front();
+    ListNode cur2=s.list.front();
+    while(cur1.isValidNode()&&cur2.isValidNode()){
+      if(((Comparable)cur1.item()).compareTo(cur2.item())<0){
+        ListNode next=cur1.next();
+        cur1.remove();
+        cur1=next;
+      }else if(((Comparable)cur1.item()).compareTo(cur2.item())==0){
+        cur1=cur1.next();
+        cur2=cur2.next();
+      }else{
+        cur2=cur2.next();  
+      }
+    }
+    if(cur1.isValidNode()){
+      while(cur1.isValidNode()){
+        ListNode next = cur1.next();
+        cur1.remove();
+        cur1 = next;
+      }
+    }
   }
 
   /**
@@ -101,11 +186,13 @@ public class Set {
    **/
   public String toString() {
     // Replace the following line with your solution.
-    return "";
+        return list.toString();
+
   }
 
   public static void main(String[] argv) {
     Set s = new Set();
+    try{
     s.insert(new Integer(3));
     s.insert(new Integer(4));
     s.insert(new Integer(3));
@@ -131,5 +218,8 @@ public class Set {
 
     System.out.println("s.cardinality() = " + s.cardinality());
     // You may want to add more (ungraded) test code here.
+    }catch (InvalidNodeException e){
+      e.printStackTrace();
+    }
   }
 }

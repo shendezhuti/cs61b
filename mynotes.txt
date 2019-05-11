@@ -1024,5 +1024,214 @@ static methods follow same shadowing rules as fields.
 "final" method-> cannot be overridden 
 "final" class -> cannot be be extend 
 
+
+
 Game Tree Search  Tic Tac Toe  google it!
+
+assume both opponents are infinitely intelligent
+Each grid is assigned a numerical score that indicateds how optimistim we are about winning 
+1:computer is guaranteed a win.
+-1:opponents guaranteed a win.
+0:perfect players will draw 
+
+Score a grid? suppose computer is X.
+3 X's in a row :1 
+3 O's in a row :-1
+No empty quares, nobody has won: 0
+
+Any other grid : minimax algorithm
+
+(1)consider each possible move; determine child grid.
+(2)score each child grid by calling minimax recursively
+(3)assign a score to parent grid
+
+computer's turn "choose move that yields maxmum score".
+
+opponets's turn "choose move that yield minmun score"
+
+public Best chooseMove(boolean side){
+	Best myBest=new Best();		//My best move
+	Best reply;				//opponent's best reply 
+	if(this grid is full or has a win){
+	return a best with the grid's socre,no move;
+	}
+	if(side==COMPUTER){
+	myBest.score=-1;
+	}else{
+	myBset.socre==1;
+	}
+	myBest.move=any legal move; // make sure more is always initialized 
+	for(each legal move m){
+		perform move m;
+		reply =chooseMove(!side); //recursive minimax an children
+		undo move m;	//reverse "this" grid
+		if((side==COMPUTER&&reply.score>myBestscore)||(side==HUMAN&&reply.score<myBest.score)){
+			myBest.move=m;
+			myBest.score=reply.score;
+		}
+	}
+	return myBest;
+}
+
+Each grid in game tree represtent are invovation of chooseMove();
+
+simple prunning 
+	if a player discovers a guranteed winning move 
+	there's no reason to search for a better move .
+
+Alpha-beta Pruning 
+
+Computer has dicovered a move (A) that guarantees a draw;
+is investigating an alternative move(B).
+Discover that if opponents moves X in response,the opponents can force a draw,
+the opponent can force a draw.
+stop investigating B
+
+∂: a score that computer knows it can achieve 
+ß:a score that opponent knows it can achieve
+
+if ß becomes <= ∂, further investigation of current grid is useless
+
+ENCAPSULATATION
+Module:A set of methods that work together to perfrom some task.
+
+A module is encapsulated if its implementation is hidden, & it can be accesssed only through a documentted interface.
+
+ADT: Encapsulated date structure. 
+not all modules are ADTS.
+
+Algorithms (list sorters) & applications (netword routing software) can be encapsulated
+
+public class ListManager {
+	
+	list.head.next=list.head.next.next;	// violation of data hidding 
+}
+
+This kind of bug is one of the most difficult to find & fix 
+
+Application
+
+  |interface|
+
+  |	module or		|
+  |	Abstract Data type		|
+  |			|
+  |			|
+
+ Data can only go in & out through the interface.
+
+ why encapsulation is your friend ?
+
+ (1)the implementation is independent of the functionality
+ 	->with the interface documentation, you can implement a new version independently.
+ 	->New , better implementation can replace old one.
+ (2)Prevents everyone from corrupting a modules internal data.
+ (3)ADTS can guarantee their invariants are preserved 
+ (4)Teamwork. Once you've define interfaces, each programmer can independtly implement a module.
+ (5) Documentation & maintainability. 
+ (6) pj2 doesn't work?? Easier to point the blame
+ (7) An interface is a CONTRACT between module writers, specifying exactly how they will communicate
+
+ Enforcing encapsulation
+ Many language: self-discipline.
+ Java : package & "private", package, & "protected "
+
+ not always enough, e.g. many modules in some package.
+
+ pj2: could put all modules in "player" package.
+
+ One way to selef-discipline: different team member work on each module. Neither team member reveals code to others. 
+
+ project 2 
+ Document interface in GRADER before you start programming. Allows you to work as a team.
+
+ 		Machine Player
+
+ 	game tree search module 
+
+evalution function 		
+						network identifier
+
+Modules must be independent and communicate through simple interfaces. 
+
+A module is organized around functionality it provides.
+A class is organized around a data storage unit.
+
+A module can be made up of several classes;
+a class can be made up of several moduels. 
+	Module might implement data structure made of several classes 
+e.g. List=list object +node objects.
+
+class can support many independent operations.
+game tree search; evaluation function; network id.
+all operate on game board .
+
+A module may include many methods or few.
+A package may contain are modue or many.
+
+Project 2 documentation: 
+-List the modules.  
+-For each modules, specify its interface. 
+o Prototype(s) for methods available for external callers:
+o Comment that describes behavior from external point of view.
+
+o Describe every parameter & return value.
+
+complete & unamiguous 
+interfaces appears in both GRADER and code.
+
+ENCAPSULATED LISTS (a case study)
+hw 3,4,5 : Three different linked lists;
+
+hw3 lists: query every item : O(n^2) time. (use nth(i),takes time ∂ i)
+hw 4,5: Application can hold a node.
+		Query every time in O(n) time 
+
+hw 5 SList & DList are well-encapsulated 
+hw 4 DList had flaws. 
+
+(1)what if l.remove(n); -but node n is a different list than l!
+	hw4: "size" field of wrong list is updated!
+	fix? 
+	ADT interface fix: remove(), insertAfter(),etc. should update the right list's "size"!
+	implementation fix : every node keeps a reference to list that controls it .
+	hw5: "mylist" 
+(2)should insertAfter(),remove(), etc. be methods of List or ListNode 
+
+	ADT interface fix:
+		 List    	
+
+
+		Implementation fix: Each node has "myList" field, 
+							update correct list's "size". 
+(3)what if l.remove(n), l.insertAfter(i,n) 	
+
+
+calling remove(n) twice on same node also corrupts "size"
+	fix?
+
+	ADT interface fix: After n.remove(n), n is  "invalid", any attempts to use n throws exception
+
+Implementation fix:  n.remove()-> n.myList set to null. (mark n invalid) 						
+
+
+(4) what if we walk off end of list? (using next());
+
+ADT interface answer: 	
+		hw4 :return null.
+		hw5 : return invalied node .
+		 provide some consistency: tail.next() & remove()give some result.
+		 n.next.item() -> hw5 it throws InvalidNodeException 
+		 				hw4 it throws NullPointerException 
+		 				Eliminates ambiguity .
+
+		 Implements that answer:  any sentinel is an invalid node.
+
+(5) How do we access an item ?
+	ADT interface answer: 
+		hw4: Node's "item" is public .
+		hw5: ""   is protected, application must use item() & setitem(). why??
+		Application can't store items in deleted nodes or sentinels. 
+
+	ADTs should never do more than the documentation says 		 
 
