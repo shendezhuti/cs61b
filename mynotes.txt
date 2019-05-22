@@ -194,11 +194,12 @@ Field "c.length"
 Primes Revisited
 Sieve of Eratosthenes
 
-public staticvoid printPrimes(int n){
+public static void printPrimes(int n){
 	boolean []prime= new boolean[n+1];
 	for(int i=2;i<=n;i++){
 	prime[i]=true; //prime until proven composite
 	}
+	
 	for(int divisor=2;divisor*divisor<=n;divisor++){
 	if(prime[divisor]){
 		for(int i=2*divisor;i<=n;i=i+divisor){
@@ -1233,5 +1234,620 @@ ADT interface answer:
 		hw5: ""   is protected, application must use item() & setitem(). why??
 		Application can't store items in deleted nodes or sentinels. 
 
-	ADTs should never do more than the documentation says 		 
+	ADTs should never do more than the documentation says 
+			 
+
+ASYPOTOITC ANALYSIS
+
+Inventory: 
+
+	10000ms to read inventory from disk.
+	10ms to process each transaction.
+	n transcations takes (10,000+10n)ms.	more important if n is large
+
+	Big- On Notation (upper bounds)
+
+	Let n be size of program's input.
+	Let T(n) be function. e.g. running time in ms.
+	Let f(n) be another function - prefably simple 
+
+	T(n) 
+
+	How big is "big"? big enough to make T(n) fit under c t(n)
+	How large is c? 
+
+EXAMPLE: Inventory 
+
+T(n)=10,000+10n
+
+Try out f(n)=n;  pick c=20.
+
+FORMALLY :  O(f(n)) is the SET of ALL function T(n) that satisfy: 
+	There exist positive constatns c&N such that 
+	for all n>=N, T(n)<=cf(n). 
+
+O(n)is subset O(n^2)
+
+EXAMPLES:
+	(1) 1,000,000 n is subset of O(n) proof: set c=1,000,000,000, N=0;
+	Big-O notation doesn't care about (most) constant factors.
+
+	O(2n)=O(n)=O(1000,000,000n)
+
+	(2) big-o specifies UPPER bound only.
+
+(3) n^3+n^2+n O(n^3)  proof: Set c=3 ,N=1;
+
+	Big-o notation is usually used to indicate dominant  (largest) term
+
+Table of Important Big-O Sets 
+From smallest to largest :  
+						function   common name
+						O(1) 		constant 
+						O(logn)		logarithmic 
+						O((log^2)n)  log-squared
+						o(√n) 		root-n
+						O(n)		linear
+						O(nlogn)	
+						O(n^2)		quadratic 
+						O(n^3)		cubic
+						O(n^4)		quartic
+						O(2^n)		exponential
+
+Algorithms running in O(nlogn)time or faster considered efficient !  n^ time or more : useless
+
+Logarithms: 4.1.2 & 4.1.7 of G & T
+
+
+Warnings 
+
+(1) Fallacious proof : 
+(2) Big-o notation does not say what the function mean 
+	binary search on an arrays 
+	worst-case running time O(logn) 
+	best-case running time O(1)
+	memory-use 
+
+(3) e^(3n) 
+(4) Big-O notation does not tell whole story 
+	T(n)=nlogn
+	
+DICTIONARIES
+
+Two-letter words & definitions.
+word is the key that addresses the definition: 
+26*26=676 possible words
+
+To insert a Definition into dictionary:
+	function hashcode() maps each word (key) to 
+	integer 0....675. Index into array; store Definition there.
+
+public class Word{
+	public static final int LETTER =26;
+							WORDS=LETTER* LETTER;
+	private String word;
+
+	public int hashCode(){
+			return LETTER * (word.charAt(0)-'a')+(word.charAt(1)-'a');
+	}
+ }	
+
+public class WordDictionary{
+	private Definition []defTable=new Definition[Word.WORDS];
+
+	public void insert(Word w,Definition d){
+		defTable[w.hashCode()]=d;
+	}
+
+	Definition find(Word w){
+	 return defTable[w.hashCode()];
+	}
+}
+
+
+Hash Tables (most common implementation of dictionaries)
+n: number of keys (words).
+Table of N buckets, N a bit larger than n.
+
+Hash table maps huge set of possible keys into N buckets 
+
+by applying a compression function - to each hash code.
+
+h(hashCode)=hashCode mod N.   // hashCode is often negative 
+					
+					not exactly the same as % .
+
+Problem: Collisions: Several keys hash to same bucket.
+solution: chainning. Each buckets references a linked list of Definitions, called a chain.
+problem:：Which Definition for which Word?
+Soulution: Each listnode store Word & Definition together. 
+			
+defTable 
+		3 operations: 
+
+	public Entry insert(key,value){
+		compute key's hash code .
+		compress it to determine bucket.
+		Insert the entry into th bucket's list
+	} 				 
+
+	public Entry find(key){
+		Hash the key
+		search list for entry with the given key
+		if we find, return entry;  	otherwise, return null.
+	}
+
+	public Entry remove(key){
+		hash the key
+		search the list.
+		Remove if from the list if found.
+		return entry or null.
+	}
+
+
+2 entries w/same key?
+	
+	(1)G & T: insert both, find() arbiraily returns one.
+		findAll()
+
+	(2)Replace old value w/new . only one entry w/given key exists.
+
+Load factor of hash table is n/N.
+
+if load factor low 
+		& hash code & compression fn are "good"
+		& no duplicate keys stored,
+		then the chains are short & each operation takes O(1) time.
+
+If load factor too large (n>>N) ,O(n) time.
+
+
+hash code & compreesion functions 
+			key-> hash code -> [0,N-1]  N:the number of buckets
+
+Ideal: Map each key to random bucket 
+
+	Bad compression function: 
+		suppose key are ints.  hashCode(i)=i. 
+
+	Compression function: h(hashCode), hashCode mod N, 
+	N=10,000 buckets
+
+	suppose keys are divisible by 4.
+
+	Three quarters of buckets never used!!!
+	Same compression fn better if N is prime.
+
+better:  h(hashCode)=((a*hashCode+b)) mod p) mod N 
+		
+		a,b,p:positive Integers,
+		p: large prime,p>>N
+
+	Now, N(buckets) does not need to be prime. 
+
+	Hash Codes 
+
+Good hash code for Strings: 
+	private static int hashCode(String  key){
+		int hashVal=0;
+		for(int i=0;i<key.length();i++){
+			hashVal=(127*hashVal+key.charAt(i))%16908799;		mix up the bits
+		}
+		return hashVal;
+	}
+
+	why does x mod prime mix up bits?
+
+	Bad hash codes on Words.
+	(1)sum ASCII values of characters.
+			anagrams like "pat","tap","apt" collide
+		Raraly exceeds 2,000  
+	(2)First 3 letter of a word, with 26^3 buckets.
+	   Bucket zzq gets much less use than "pre" 
+	(3)suppose prime modules is 127.
+	   Last char rules!!
+	   Mutiplier & modulues must havs no common factors
+
+Resizing Hash Tables 
+
+	If load factor n/N gets too big, we lose constant time performance 
+	enlarge hash table when load factor is about 0.75.
+	Allocate new array at least twice as long.
+	Walk through entires in old array, rehash them into new .
+Option: Shrink hash tables (e.g. when n/N<0.25) to free memory 
+
+Average running time over long run is still O(1) per operation.
+
+Transposition Tables : Speed Game Trees 
+	Some grids reachable through many different sequences of moves .
+
+	evaluate many times.
+	Maintain hash tables of grids.
+	Called transportation table. 
+		key is the grid   value is its score 
+
+Minimax algorithms  checks if grid is in transposition tables.
+
+	yes: return scores.
+	No: evaluate score (by minimax) & store in hash table.
+
+Empty the table after making a move! 
+	
+
+Stacks
+Operations: 
+	"push" new item onto top of stack.
+	"push" top item off stack.
+	examine "top" item.
+
+
+All methods run in O(1)time
+easily implemented as single-linked list 
+
+sample application: verifying matched parentheses 
+{[({[]})]()}
+
+alg: scan through string, char by char .
+
+	lefty 
+	righty pop its counterpart from stack, chech that they match.
+	mismatch or null returned, or stack not empty at end of string -> parentheses not properly matched .
+	这个字符匹配问题我感觉教授就讲的非常好！！！
+
+Queues 
+	Operations:
+	"enqueue" item at back of queue
+	"dequeue" tiem at front of queue
+	examine "front" item.
+
+ab -> dequeue ->b enqueue(c)->bc
+
+Sample application : Printer queues.
+
+All methods run in O(1)time
+easily implemented as singly-linked list with tail pointer.
+
+DEQUES
+  Double-Ended Queue 
+  you can insert & remove items at both ends 
+  Use a doubley-linked list.
+
+
+
+Ω(n)means at least good
+
+
+ROOTED TREES
+
+Tree: set of nodes & edge that connect them. 
+ 	exactly one path betweem only two nodes
+ 		Path: A sequece of one or more nodes, each consecutive pair connected by an edge.
+
+ 	Rooted tree: one distinguished node is root.
+ Every node c, exception root, has a one parent p 
+ 	the first on the path from c to the root.
+ 	c is p's child.
+ 	root has no parent
+ 	A node can have any # of children 
+ 	Leaf:node with no children .
+ 	Internal node: no-leaf node
+ 	Siblings: Node with same parent.
+ 	Ancestors of d: nodes on path from d to root, including d,d's parent, d's granny, ...., root .
+ 	If d is ancesotr of d, then d is a descendant of a.
+ 	Length of path: # of edges in path.
+ 	Depth of node n: length of path from n to root.
+ 	Depth of the root is zero!
+ 	Height of node n : length of path from n to its deepest descendant.
+ 		Height of a leaf is zero!!
+ 	Height of a tree = height of root.
+ 	subtree rooted at n: tree formed by n & its descendants
+ 	Binary tree: no node has >2 children & every child is a left child or a right child, even if its the only child
+
+ 	Representaing Rooted Trees 
+
+ G & T:  Each node stores 3 references: 
+ 	item    parent  children,stroed in list.
+
+ 	Option 2:   Sibling treenode are directly linked 
+
+ 		class SibTreeNode {
+ 		Object item;
+ 		SibTreeNode parent;
+ 		SibTreeNode firstChild;
+ 		SibTreeNode nextSibling;
+ 		}
+
+ 		class SibTree{
+ 			SibTreeNode root;
+ 			int size;
+ 		}
+
+ 		Tree Traversals 
+ 		traversal: a manner of visiting each node in a tree once .
+ 		preorder traversal: visit each node before recursive visiting its children,left to right. Root visited first.
+ 		class SibTreeNode {
+ 			public void preorder (){
+ 				This.visit();
+ 				if(firstchild!=null){
+ 				firstchild.preorder();
+ 				}
+ 				if(nextSibling !=null){
+ 				nextSibling.preorder();
+ 				}
+ 			}
+ 		}
+
+ 		each node visited/preorder() only once, so preorder takes O(n) time ,where n is # of treeNodes.
+
+ 		~jrs/61b
+ 			hw 
+ 			  hw1
+ 			  hw2
+ 			index.hmtl
+ 			lab
+ 				lab1
+ 				lab2
+ 			lec 
+ 				o1
+ 				o2
+ 				o3
+ 				o4
+
+ 		post-order	traversal:	recursively visit each node's children (left to right) before the node itself.
+
+ 		Natural way to sum total disk space.
+
+ 		Binary tree have inorder travsersal : recursively traverse root's left subtree(rooted at left child),
+ 			then root, then right sub tree.
+
+
+ 			Infix:   prefix:  postfix:
+
+ 		Level-order traversal: 	visit root , the all depth -1 node from (left to right),then all the depth-2 nodes, etc.
+ 		Not recursive. 
+ 		use a queue, which initially contains root.
+ 		repeat: 
+ 			dequeue a node
+ 			visit it 
+ 			enqueue its children(left to right).
+ 			until queue is empty.
+
+
+ 			PRIORITY QUEUES 
+ 			Entries: key & value. 
+ 			Define total order on the keys.	
+ 			Operations:
+ 				insert () adds entry to priorityqueue
+ 				min() returns entry w/minimun key 
+ 				removeMin() remove & returns """" .
+
+ 			Commonly used as "event gueues"in simulations.
+ 			Binary Heap: An Implementation of priority queues.
+ 			Complelte binary tree: Every row is full, except bottom row, which is filled from left to right.
+
+ 			Binary heap: complete birany tree whose entries satisfy heap-order property: no child has a key less than its parent's 
+ 			Every subtree of a binary heap is  bianry heap.
+
+ 			To store as arrays, map treeNodes to array indices with level numbering:
+ 			level-order traversal with root at index 1.
+ 				node i's children are 2i and 2i+1; partent is  floor[i/2].
+ 			Each treenode has 2 references: key , value.
+ 			
+ 			(1)Entry min();
+ 			return entry at root.
+
+ 			(2)Entry insert(Object k, Object v);
+ 			Let X be new entry (k,v).
+ 			Place x in bottom level tree, at first tree spot from left.
+ 			i.e. first tree location in array.
+ 			Entry bubbles up tree until heap-order property is satisfied.
+ 				while x's key < parent's key, swap x with parent;
+ 				repeat for x's new parant.
+
+ 			(3)Entry removeMin();
+ 				Remove entry at root; save it for return value.
+ 				Fill hole with last entry in tree, x.
+ 				Bubble x down the heap: 
+ 					while x>one or both children, swap x with its minimum children;
+ 					repeat 
+
+ 				Running Times:	
+ 					Binary Heap;Sorted List/Array   Unsorted List/Array 
+
+ 				insert ()takes O(1)time to compare x w/parent & swap
+ 				An n-node complete binary tree has height floor[logn]
+
+ 				Bottom-up heap construction 
+ 					Given bunch of entries; make a heap;
+ 				(4)void bottomUpHead();
+
+ 				Make complete tree of entries, in any order.
+ 				Work backward from last internal node to root.
+ 					(i.e. reverse order in array)
+ 					when visiting node, bubble its entry down (as in removeMin()).
+ 					
+
+Binary search tree
+Ordered dictionary:  keys have a total order,like a heap.
+Quickly find entry w/min or max key.
+
+An inorder traversal of a binary search tree visits nodes in sorted 
+
+public Entry find(Object k){
+	BinaryTreeNode node=root;
+	while(node!=null){
+		int comp=((Comparable)k).compareTo(node.entry.key());
+		if(comp<0){
+			node=node.left;
+		}else if(comp>0){
+			node=node.right;
+		}else{
+			return node.entry;
+		}
+	}
+	return null;
+}
+
+1.How to find smallest key>=k or larget key<=k?
+When searching down tree for a key k that not in the tree, we encounter both:
+(1)node containing smallest key>k
+(2)node containing smallest key<k
+
+
+2.Entry first();
+Entry last();
+
+It tree is empty,return null;
+Otherwise, start at root.
+repeatedly go to left child until no left child ,return minimum key.
+
+3.Entry insert(Object k,object v){
+	Follow same path through tree as find();
+	when reaches null reference, 
+	replace null w/a new node with entry(k,v);
+}
+
+4.Entry remove(Object k);
+
+	find a node n with key k;
+	return null if k not in tree.
+	if n has no children, detach it from its parent
+
+	if n has one children, move n's child up to take n's place
+	if n has two chlldren, let x be node in n's right subtree w/smalleest key
+	remove x , x has no left child, is easily removed.
+	replace n's entry with x's entry.
+
+Running times
+
+
+2-3-4 Trees
+A perfectly balanced tree.
+find, insert, remove take O(logn) worst-case
+
+Every node has 2,3 or 4 children, except leaves, which are all at bottom level.
+
+Each node sotre 1,2,3 or 3 entries.
+
+	# of children is entries+1 or zero
+
+G & T "bottom-up" 2-3-4 trees;
+today: "top-bottom" 2-3-4 trees  Faster.
+
+1.Entry find(Object k);
+2.Entry insert(Object k,Object v);
+	walks down tree in search of k.
+	if it finds k, it proceeds to k's "left child" and continues.
+
+	whenever insert() encounter a 3-key node, middle key is places in parent node.
+	(Parent has at most 2 keys, always have room for a third)
+
+3.Entry remove(Object k);
+	Find key K.
+	if it's in a leaf, remove key from leaf
+	if it's internal node, replace it with etry with next higher key.
+	remove()changes nodes as it walks down.
+	Eliminate 1-key nodes(except root) so keys can be removed from a leaf without leaving it empty.
+
+	(1)remove() encounter 1-key node(except root), try to steal a key from an adjacent sibling
+					rotation
+	(2) if no adjacent sibling has >1 key, steal key from parent
+		parent(unless root) has >= 2keys.
+					fusion
+	(3)if parent is root and contains only one key, and sibling contains only key.
+		sibling contains only one key, fuse all into 3-key node.
+		the new root. 
+
+Running time 
+
+A 2-3-4 tree with height h has 2^h & 4^h leaves.
+Total # of entries n>= 2^(h+1)-1
+
+Time spent visiting node O(1).
+
+find(),insert(),remove() worst-case times: O(logn).
+
+Binary search trees :worst O(n)
+
+
+GRAPHS 
+	a graph G is a set of V of retices and a set of E of edges that connect vertices 
+
+	G=(v,E)				T=(V,F)
+	 ordered pair
+
+2 types: directed & undirected 
+	Digraph: every edge e is directed from some vertex v to some vertex w
+
+
+	Undirected: e=(v,w) is an unordered pair. 
+	
+	(v,w)=(w,v)
+
+	mutiple copies of an edge are forbidden.
+	Digraph may contain both (v,w) & (w,v);
+
+	self-edges(v,v);
+	path: sequence of vertices with each adjacent pair connected by an edge. If graph is directed, edges must be aligned with direction of path.
+
+	Length of path: # of edges.
+		<4,5,6,3>: length 3.
+		<2>:length O. 
+		<2,2>: length 1
+		<2,2,2>: length 2
+
+	Strongly-connected: there is a path from every vertex to every other vertex.
+		(Called connected in undirected graphs.)
+
+	Degree of vertex: # of edge incident on vertex. 
+	(self-edges count just once)!
+
+	Digraph indegree: # of edges directed toward it .
+			outdegree: # of edges         away it.
+
+	Graph representations: 
+	Adjacency matrix: |v|-by-|v| array of booleans.
+
+	Planar graphs have O(|v|)edges.
+	Graph is sparse if it has far fewer edges that maximum.
+
+	Adjacency list: Each vertex v has a list edges out.
+
+	Memory used 
+
+	If vertices are consecutive ints, use array of lists to find any vertex's list on O(1) time.
+
+	If vertices are objects ,use a hash table. key : vertex object  value:list
+
+	Adjacency list is more space and time efficient for a sparse graph, less efficient for a complete graph
+
+	graph Traversals 
+	visit each vertex once.
+	Depth-first search(DFS) searches graph as "deeply" as possible as early as possible. 
+	If graph is tree, DFS performs preorder traversal.
+
+	Breadth-first search (BFS) visit all vertices shoe distance from starting vertex is one, then two, & so on
+
+	If graph is tree, BFS performs level-order traversal.
+	Each vertex has a boolean field "visited" taht tells us if we have visited it before
+
+	Assume a strongly connected graph
+	When DFS visites a vertiex u. it chech every edge(u,v).
+	if v not yet visited, DFS visites it recursively.
+
+	public class Graph{
+		public void dfs(Vetex u){
+			u.visit();
+			u.visited=true;
+			for(each vertex v such (u,v)){
+				if(!v.isited){
+					dfs(v);
+				}
+			}
+		}
+	}
+
+
+
+
 

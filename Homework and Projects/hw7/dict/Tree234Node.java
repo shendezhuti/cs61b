@@ -119,4 +119,27 @@ class Tree234Node {
       child1.printSubtree(spaces + 5);
     }
   }
+
+  public void insertKey(int key){
+    if(keys==1){
+      if(key<key1){
+        key2=key1;
+        key1=key;
+      }else{
+        key2=key;
+      }
+    }else if(keys==2){
+      if(key<key1){
+        key3=key2;
+        key2=key1;
+        key1=key;
+      }else if(key>key1&&key<key2){
+        key3=key2;
+        key2=key;
+      }else{
+        key3=key;
+      }
+    }
+    keys++;
+  }
 }

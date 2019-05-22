@@ -60,6 +60,16 @@ public class Homework6Test {
     // that counts the number of collisions--or better yet, also prints
     // a histograph of the number of entries in each bucket.  Call this method
     // from here.
+    System.out.println("n = " + numBoards + " N = " + table.size());
+    System.out.println("Actual number of collisions: " + table.collisions);
+    System.out.printf("Expected number of collisions: %.2f%n", table.calExpCollision(numBoards, table.size()));
+    String[] output = table.String();
+    for (String s : output) {
+      if (s != null) {
+        System.out.println(s);
+      }
+    }
+    
   }
 
 }
