@@ -78,7 +78,52 @@ public class Maze {
      * is run, so that you can make lots of different mazes.
      **/
 
+    DisjointSets st=new DisjointSets(horiz*vert);
+    int numberOfHWall=horiz * (vert-1);
+    int numberOfVWall=vert * (horiz-1);
+    int []walls=new int[numberOfVWall+numberOfHWall];
+    for( i=0;i<numberOfHWall;i++){
+      walls[i]=i+1;
+    }
+    int vindex=0;
+    for( i=numberOfHWall;i<numberOfHWall+numberOfVWall;i++){
+      walls[i]=-vindex;
+      vindex=vindex+1;
+    }
 
+    for( i=numberOfVWall+numberOfHWall;i>0;i--){
+      int index=randInt(i);
+      int temp=walls[i-1];
+      walls[i-1]=walls[index];
+      walls[index]=temp;
+    }
+
+    for( i=0;i<numberOfVWall+numberOfHWall;i++){
+      int w=walls[i];
+      if(w>0){
+          int topX=(w-1)/(vert-1);
+          int topY=(w-1)%(vert-1);
+          int downX=topX;
+          int downY=topY+1;
+          int topCell = topX + topY * horiz;
+          int downCell = downX + downY * horiz;
+          if(st.find(topCell)!=st.find(downCell)){
+            hWalls[topX][topY]=false;
+            st.union(st.find(topCell),st.find(downCell));
+          }
+      }else{
+          int leftX=(-w)%(horiz-1);
+          int leftY=(-w)/(horiz-1);
+          int rightX=leftX+1;
+          int rightY=leftY;
+          int leftCell = leftX + leftY * horiz;
+          int rightCell = rightX + rightY * horiz;
+          if(st.find(leftCell)!=st.find(rightCell)){
+            vWalls[leftX][leftY]=false;
+            st.union(st.find(leftCell),st.find(rightCell));
+          }
+      }
+    }
 
   }
 

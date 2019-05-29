@@ -4,7 +4,7 @@ import list.*;
 
 public class ListSorts {
 
-  private final static int SORTSIZE = 1000;
+  private final static int SORTSIZE = 1000000;
 
   /**
    *  makeQueueOfQueues() makes a queue of queues, each containing one item
@@ -15,7 +15,18 @@ public class ListSorts {
    **/
   public static LinkedQueue makeQueueOfQueues(LinkedQueue q) {
     // Replace the following line with your solution.
-    return null;
+      int size=q.size();
+      LinkedQueue que=new LinkedQueue();
+      for(int i=0;i<size;i++){
+        LinkedQueue newqueue=new LinkedQueue();
+       try{
+          newqueue.enqueue(q.dequeue());
+       }catch (QueueEmptyException e){
+        e.printStackTrace();
+       }
+       que.enqueue(newqueue);
+      }
+    return que;
   }
 
   /**
@@ -31,7 +42,35 @@ public class ListSorts {
    **/
   public static LinkedQueue mergeSortedQueues(LinkedQueue q1, LinkedQueue q2) {
     // Replace the following line with your solution.
-    return null;
+    LinkedQueue q=new LinkedQueue();
+    while(!q1.isEmpty()&&!q2.isEmpty()){
+      try{
+         Comparable item1=(Comparable)q1.front();
+         Comparable item2=(Comparable)q2.front();
+         if(item1.compareTo(item2)<=0){
+         q.enqueue(q1.dequeue());
+         }else{
+          q.enqueue(q2.dequeue());
+         }
+      }catch(QueueEmptyException e){
+        e.printStackTrace();
+      }
+    }
+    while(!q1.isEmpty()){
+      try{
+        q.enqueue(q1.dequeue());
+      }catch(QueueEmptyException e){
+        e.printStackTrace();
+      }
+    }
+    while(!q2.isEmpty()){
+      try{
+        q.enqueue(q2.dequeue());
+      }catch(QueueEmptyException e){
+        e.printStackTrace();
+      }
+    }
+    return q;
   }
 
   /**
@@ -51,6 +90,20 @@ public class ListSorts {
                                LinkedQueue qSmall, LinkedQueue qEquals, 
                                LinkedQueue qLarge) {
     // Your solution here.
+    while(!qIn.isEmpty()){
+      try{
+        Comparable item=(Comparable)qIn.dequeue();
+        if(item.compareTo(pivot)<0){
+            qSmall.enqueue(item);
+        }else if(item.compareTo(pivot)==0){
+            qEquals.enqueue(item);
+        }else{
+            qLarge.enqueue(item);
+        }
+      }catch(QueueEmptyException e){
+        e.printStackTrace();
+      }
+    }
   }
 
   /**
@@ -59,6 +112,29 @@ public class ListSorts {
    **/
   public static void mergeSort(LinkedQueue q) {
     // Your solution here.
+      if(q.size()<=1){
+        return;
+      }
+
+     LinkedQueue que=makeQueueOfQueues(q);//注意q这时候已经变成了空的
+     while(que.size()>1){
+        LinkedQueue q1=null;
+        LinkedQueue q2=null;
+        try{
+          q1=(LinkedQueue)que.dequeue();
+          q2=(LinkedQueue)que.dequeue();
+        }catch(QueueEmptyException e){
+          e.printStackTrace();
+        }
+        LinkedQueue p=mergeSortedQueues(q1,q2);
+        que.enqueue(p);
+     }
+     try{
+          q.append((LinkedQueue)que.dequeue());
+     }catch(QueueEmptyException e){
+          e.printStackTrace();
+        }
+
   }
 
   /**
@@ -67,6 +143,21 @@ public class ListSorts {
    **/
   public static void quickSort(LinkedQueue q) {
     // Your solution here.
+    int index=((int)(Math.random()*100000))%q.size()+1;
+    Comparable pivot=(Comparable)q.nth(index);
+    LinkedQueue qSmall = new LinkedQueue();
+    LinkedQueue qEquals = new LinkedQueue();
+    LinkedQueue qLarge = new LinkedQueue();
+    partition(q,pivot,qSmall,qEquals,qLarge);
+    if(qSmall.size()>1){
+      quickSort(qSmall);
+    }
+    if(qLarge.size()>1){
+      quickSort(qLarge);
+    }
+    q.append(qSmall);
+    q.append(qEquals);
+    q.append(qLarge);
   }
 
   /**
@@ -99,7 +190,7 @@ public class ListSorts {
     quickSort(q);
     System.out.println(q.toString());
 
-    /* Remove these comments for Part III.
+    
     Timer stopWatch = new Timer();
     q = makeRandom(SORTSIZE);
     stopWatch.start();
@@ -115,7 +206,7 @@ public class ListSorts {
     stopWatch.stop();
     System.out.println("Quicksort time, " + SORTSIZE + " Integers:  " +
                        stopWatch.elapsed() + " msec.");
-    */
+    
   }
 
 }

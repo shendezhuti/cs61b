@@ -255,13 +255,62 @@ public class HashTableChained implements Dictionary {
   }
 
   public static void main (String []args){
-    HashTableChained hash=new HashTableChained(100);
-    Random rand=new Random(1);
-    for(int i=20;i>0;i--){
-      hash.insert(Math.abs(rand.nextInt()),i);
-    }
-    System.out.println(hash);
-    System.out.println(hash.collisions);
-    System.out.printf("%.2f", calExpCollision(20, 100));
+    HashTableChained table=new HashTableChained(100);
+    // Random rand=new Random(1);
+    // for(int i=20;i>0;i--){
+    //   hash.insert(Math.abs(rand.nextInt()),i);
+    // }
+    // System.out.println(hash);
+    // System.out.println(hash.collisions);
+    // System.out.printf("%.2f", calExpCollision(20, 100));
+
+     System.out.println("=====================size, isEmpty=========================");
+        System.out.println("table's size is: " + table.size());
+        System.out.println("table is Empty: " + table.isEmpty());
+        
+        System.out.println("=====================insert================================");
+        table.insert("1", "The first one");
+        table.insert("2", "The second one");
+        table.insert("3", "The third one");
+        table.insert("what", "nani?");
+        table.insert("the","Eh-heng");
+        table.insert("hell!","impolite");
+        System.out.println("table's size is: " + table.size());
+        System.out.println("table is Empty: " + table.isEmpty());
+      
+          String [] output = table.String();
+          for(String s : output){
+               if(s != null)    System.out.println(s);
+          }
+       
+        
+        System.out.println("====================find, remove===========================");
+        Entry e1 = table.find("6");
+        if(e1 != null)
+                System.out.println("The item found is: [ " + e1.toString() + " ]");
+        else
+                System.out.println("The is no such item in the table to be found.");
+        
+        Entry e2 = table.remove("hell!");
+        if(e2 != null)
+                System.out.println("The item deleted is: [ " + e2.toString() + " ]");
+        else
+                System.out.println("The is no such item in the table to be deleted.");
+        
+      
+                 output = table.String();
+                for(String s : output){
+                        if(s != null)        System.out.println(s);
+                      }
+        
+        
+        System.out.println("=====================makeEmpty=============================");
+        table.makeEmpty();
+       
+                 output = table.String();
+                for(String s : output){
+                        if(s != null)        System.out.println(s);
+                 }
+           
   }
 }

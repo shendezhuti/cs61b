@@ -1,0 +1,10 @@
+1.each cell of the maze is represented as a separate item 
+
+DisjointSets set=new DisjointSets(horiz*vert);
+    
+
+2.Order the interior walls of the maze in a random order
+
+ to create an array in which every wall (horizontal and vertical) is represented
+
+ 
