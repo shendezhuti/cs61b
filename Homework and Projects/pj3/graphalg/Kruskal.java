@@ -33,9 +33,7 @@ public class Kruskal {
         que.enqueue(edge);
       }
     }
-
     ListSorts.quickSort(que);
-
     DisjointSets st = new DisjointSets(g.vertexCount());
     HashTableChained vertexHash = new HashTableChained();
     for (int i = 0; i < vertexObj.length; ++i) {
