@@ -1848,6 +1848,611 @@ GRAPHS
 	}
 
 
+Graphs(continued)
+
+	public void bfs(Vertex u){
+		u.visit(null);
+		u.visit=true;
+		q=new Queue(u);
+		q.enqueue(u);
+		while(q is not empty){
+			v.dequeue();
+			for(each vertex w such that (v,w) is an edge in E){
+				if(!w.visited){
+				w.visit(v);
+				w.visit=true;
+				q.enqueue(w);
+				}
+			}
+		}
+	}
+
+	public class vertex {
+		protected Vertex parent;
+		protected int depth;
+		protected boolean visited;
+		public void visti(Vertex origin){
+			this.parent=origin;
+			if(orogin==null){
+				this.depth=0;
+			}else{
+				this.depth=origin.depth+1;
+			}
+		}
+	}
+
+
+	Find shortest path from any verte to start vertex by following parent pointers
+	"depth" tells you length of that path.
+
+	BFS runs in O(|v|+|E|) time w/adjacency list.
+
+Weighted Graphs
+	
+	Each edge labeled with numerical weight. 
+		Adjacency matrix: array of ints, doubles.
+		Adjacency list: each listnode includes a weight.
+		problems:
+		 	(1)shortest path problem 
+		 	 	BFS solves this if all edge weightes are 1.
+		 	cs170 for nonuniotrm edge weights.
+		 	
+		 	(2)minimun spanning tree 
+		 		Each vertex is outlet or source of electricity.
+		 		Edges labeled with length of wire.
+		 		Connect all nodes with shortest length of wire.
+
+		 	Kruskal's Algorithm
+		 	
+		 	G=(V,E) undirected graph.
+		 	A spanning tree  T=(v,F) of G is a graph w/same vertiecs as G, and |v|-1 edges
+			of G that form a tree. 	
+
+	If G is weighted, a minimum spanning tree T of G is a spanning tree whose total weight 
+	(summed over all edges of T) is minimal. 
+
+	1. create new graph T with same vertices as G, no edge (yet).
+	2. Make a list of all edges in G. 
+	3. sort edge by weight, least to greatest.
+	4. Iterate through edges in sorted order.
+		For each edge (u,w):
+
+	4a.If u and w are not connected by path in T.
+		add (u,w)to T.
+
+	Never adds (u,w) if some path connects u&w, T is guarantee to be a tree(if G is connected)
+		or a forest.
+
+		G&T page 649: proof	
+
+		O(|v|+|E|log|v|) time w/adjacency list
+
+		怎么确定 4a步骤中判断环形呢？notes中说最简单的方法是在T中u点进行DFS，看看我们能否访问到v，但是这样比较慢
+		在lecture 33 中会有更快的方法。
+
+	Sorting 
+
+	Insertion sort: 
+		O(n^2) time 
+		Invariant: S is sorted .
+		Start with empty list S & unsorted list I of n items
+		for(each item x in I ){
+			insert x into S in sorted order.
+		}
+
+	If S is linked list, If S is array, insertion sort is a in-place sort
+
+	If S is balanced search tree
+			then running time is O(nlogn)
+
+	Selection Sort 
+	 Also guadratic time.  Invariant: S is sorted.
+	 Start w/empty list S & unsorted I of n items
+	 for(i=0;i<n;i++){
+	 	x<- item in I  w/smallest key .
+	 	remove X from I .
+	 	append X to end of S. 
+	 }			
+	 whether S is array or linked list ,  feida(n^2) time ,even in best case!
+	 In-place :
+
+	 Heap Sort-> a kind of selection sort in which I is a heap.
+	 start w/s & I  [same line]
+
+	 toss all item in I onto heap h(ignoring heap-order property).
+	 h.bottomUpHeap(); (take linear time)
+	 for(i=0;i<n;i++){
+	 	x=h.removeMin();
+	 	append x to end of s
+	 }
+
+	 HeapSort runs in O(nlogn) time.
+
+	 In place: Maintain heap backward at end of array.
+
+	 Excellent for arrays, awkward for link lists.
+
+	 Mergesort 
+	 	merge 2 sorted list into one sorted list in linear time.
+	 	Let Q1 & Q2 be 2 sorted queues. Let Q be empty queue.
+	 	while(neither Q1 nor Q2 is empty){
+	 		item1=Q1.front();
+	 		item2=Q2.front();
+	 		move smaller of item1 & item 2 from present queue to end of Q.
+
+	 	}
+	 	concatenate remaining non-empty queue(Q1 or Q2) to end of Q.
+
+	 Mergesort is a recursive divide-and-conquer algorithm 
+	 	start w/unsorted list I of n items.
+	 	Break I into halves I1 & I2, having 
+	 	Sort I1 recursively, yielding s1.
+	 	Merge s1 & s2 into sorted list s.
+	 	height:1+logn
+	 	O(n) each level
+
+	 Not an in place algorithm. 
+	 
+	 use extra array to temporarily hold result of merge.
+
+	 QuickSort 
+	 	recursive divide-and-conquer algorithms.
+
+	 Fastest comparison-based sort for arrays
+	 	 Theta(n^2) worst-case time
+	 	 virtually always runs in O(nlogn) time.
+
+	 Start w/list I of n items. 
+	 choose pivot item v from I.
+	 Partition I into two unsorted lists I1 and I2.
+	 - I1 contains all items whose keys are smaller than v’s key.
+	 - I2 contains all items whose keys are larger than v’s.
+	 - Items with the same key as v can go into either list.
+	 - The pivot v, however, does not go into either list.
+	 Sort I1 recursively, yielding the sorted list S1.
+	 Sort I2 recursively, yielding the sorted list S2.
+	 Concatenate S1, v, and S2 together, yielding a sorted list S.
+	 --------------------------- 
+	 |4 | 7 | 1 | 5 | 9 | 3 | 0|
+	 ---------------------------
+	  Just like in mergesort, the tree has O(log n)
+	levels.  Partitioning a list is a linear-time operation,
+		so the total running time is O(n log n).
+
+	Choosing a Pivot
+    A respected, time-tested method is to randomly select an item from I to serve as pivot.
+    With a random pivot, we can expect "on average" to obtain a 1/4 - 3/4 split; （G & T 11.2.1）
+
+    Quicksort on Linked Lists
+    Suppose we put all the items having the same key as v into the list I1
+
+    Better: partition I into 3 lists
+    I1,I2,Iv
+    Iv contains pivot v & all item w/same key as pivot.
+
+    concatenate s1,iv,s2 to yield S.
+
+    Quicksort on Arrays
+    	In-place 
+
+    	Suppose we have an array a in which we want to sort the items starting at a[low] and ending at a[high].We choose a pivot v and move it out of the way by swapping it with the last item, a[high].
+
+      i<- low-1  j<-high
+      i&j sandwich item to be sorted 
+      	Invariants:
+      		All item at or left of index i have a key<=pivot
+- 			All items at or right of index j have a key >= the pivot’s key.
+
+
+      	items w/same key as pivot?
+      	i & j stops when key=pivot
+      	if all items have same key, half go into I1,half into I2, well-balanced recursion tree 
+      	O(nlogn) time
+      	G & T got this wrong!!
+
+
+DISJOINT SETS
+		
+		No item is in more than one set.
+		  The collection of disjoint sets is called a _partition_  
+		  a _universe_ of items:is made up of all of the items that can be a member of a set
+
+		  2 operations:
+		  	union merges 2 sets into one
+		  	find takes an item, tells us which set it is in.
+
+List-Based Disjoint Sets and the Quick-Find Algorithm
+	The obvious data structure for disjoint sets looks like this.
+- 		Each set references a list of the items in that set.
+- 		Each item references the set that contains it.	
+
+	find: O(1)time
+	union: slow .
+
+Tree-Based Disjoint Sets and the Quick-Union Algorithm
+	union: O(1)time
+	find: slower 
+	quick-union is faster overall than quick-find.
+	Each set stored as a tree.
+	Data structrues is a forest.
+	Each item is initially root of its own tree.
+	No child or sibling references .  Only parent references 
+
+	True identity of each set is recorded at root	
+
+	Union: make the root of one set be child of root of other set.
+
+	"find" follows parent references from item to root of tree.
+
+	cost proportionnal to item's depth.
+
+Union-by-size：keeps items from getting too deep. At each root, record size of tree.
+		make the smaller tree be  a subtree of the larger one.
+
+Implementing Quick-Union with an Array
+	
+	Suppose the items are non-negative integers, numbered from zero
+
+	Array records parent of each item.
+	If item has no parent, record size of its tree as negative number -size
 
 
 
+Path Compression
+		public			
+
+
+Naming Sets
+	 maintain an additional array that maps root items to set names
+
+	 often we only want to know if items X & Y are in same set.
+	 run find(x),find(y) check if 2 roots are the same.
+
+	 Running Time of Quick-Union
+	 union: Theta(1);
+	 find: Theta(logu) worst-case time, where u is # of unions.
+	 		Average running time close to constant.
+	 	A sequence of f finds & u unions takes Theta(u+∂(f+u,u))time worst case
+	 	alpha is an extremely slowly-growing function known as the _inverse_
+_Ackermann_function_.
+		Never >4 for any values of f & u you'll ever use.
+
+	 Hence, for all practical
+purposes (but not on the Final Exam), you should think of quick-union as having
+find operations that run, on average, in constant time.
+
+
+SELECTION
+	want to find the kth smallest key in a list	
+
+Quickselect
+	modify quicksort to perform selection for us
+
+	Start with an unsorted list I of n input items.	
+	Choose a pivot item v from I.
+	Partition I into three unsorted lists I1, Iv, and I2.
+	- I1 contains all items whose keys are smaller than v’s key.
+- I2 contains all items whose keys are larger than v’s.
+- Iv contains the pivot v.
+- Items with the same key as v can go into any of the three lists.
+A _comparison-based_sort_ is one in which all decisions are based on comparing
+keys (generally done by "if" statements).  All actions taken by the sorting
+algorithm are based on the results of a sequence of true/false questions.  All
+of the sorting algorithms we have studied are comparison-based.
+(In list-based quickselect, they go into Iv; in array-based quickselect,
+    they go into I1 and I2, just like in array-based quicksort
+
+
+A LOWER BOUND ON COMPARISON-BASED SORTING
+		Suppose we have a scrambled array of n numbers, with each number from 1...n
+	occurring once.  How many possible orders can the numbers be in?
+
+		The answer is n!
+		Each different order is called a _permutation_ of the numbers
+		n!possible permutations
+
+A _comparison-based_sort_ is one in which all decisions are based on comparing
+keys (generally done by "if" statements)
+
+A correct sorting algorithm must generate a _different_ sequence of true/false
+answers for each different permutation of 1...n
+
+If a sorting algorithm asks d true/false questions, it generates <= 2^d
+different sequences of true/false answers
+
+The algorithm spends Omega(d) time asking these d questions.
+
+EVERY comparison-based sorting algorithm takes Omega(n log n) worst-case time.
+
+LINEAR-TIME SORTING
+	However, there are faster sorting algorithms that can make q-way decisions for
+	large values of q, instead of true/false (2-way) decisions.  Some of these
+	algorithms run in linear time.
+
+Bucket Sort
+		Bucket_sort_ works well when keys are distributed in a small range	, e.g. from
+		0 to q - 1, and the number of items n is larger than, or nearly as large as, q.
+		In other words, when q is in O(n).
+
+	Bucket sort takes Theta(q + n) time in the best case and in the worst case.	
+	It takes Theta(q) time to initialize the buckets in the beginning and to
+concatenate them together in the end.  It takes Theta(n) time to put all the
+items in their buckets.
+
+A sort is stable if items with equal keys come out in the same order they went in
+Bucket sort is stable.
+
+
+Counting Sort
+
+	items we sort are naked keys,no associated values .
+	No queue.
+	count of how many copies of each key
+
+Counting Sort with Complete Items
+	key plus associated value.
+	Let x be input array of objects with keys.
+
+	for(int i=0;i<x.length;i++){
+		counts[x[i].key]++;
+	}
+
+	do a scan so counts[i] contains # of keys <i
+
+	total=0;
+	for(j=0;j<counts.length;j++){
+		c=counts[j];
+		counts[j]=total;
+		total=total+c;
+	}
+
+	let y be output array. counts[i] tell us the first index of y to put item with key i .
+
+	for(int i=0;i<x.length;i++){
+		y[counts[x[i].key]]=x[i];
+		counts[x[i].key]++;
+	}
+
+	Bucket sort and counting sort both take O(q + n) time.  If q is in O(n), then
+    they take O(n) time.
+
+    Array: counting sort faster
+    Linked List: bucket sort is more natural .
+
+
+Radix Sort:
+	
+	sort 1000 items in range 0..99,99 9,999.     	
+	Provide q =10 buckets; sort on first digit only. 
+
+	we could sort queue recursively on second digit 
+	third digit and so on.
+
+	clever idea: keep numbers  in one pile throughout sort;
+		sort on last digit first, then next-to-last, etc.
+
+	up to most significant digit .
+	
+	works because bucket sort & counting sort are stable.
+
+
+	Faster if we sort 2 digit at a time (radix q=100) or 3 digits (radix q=1000).
+	Computers: power-of-two radix like q=256.
+	q= # if bucket =radix of digits we use as sort keys.
+
+	Time:
+		How many passes?
+
+
+SPLAY TREES
+	
+	Balanced bianry search tree.
+	All operations:  O(logn) Time on average;
+				n is # of entries in tree.
+
+	A single operation:  Theta(n) worst case.
+	Any sequence of k ops, with initally empty & never > n items.
+
+		takes O(klogn)time worst-case time.
+
+	Fast access to entries accessed recently .
+	
+	Tree Rotations 	
+		splay trees are kept balanced with rotations.
+
+SPLAY TREE 
+		Splay tree operations 
+
+		1.entry find(Object k);
+			begins like ordinary BST: walk down tree to entry with key k or dead end.
+			Let x be node where search ended, whether it contains k or not .Splay X up the tree through a sequence of rotations, so X becomes root of the tree.
+
+			3cases:
+		2.	Entry min();
+			 		max();
+			 find entry with min/max key.
+			 splay it to the root.
+
+		3. Entry insert(Object k, Object v);
+			Insert new entry (k,v).
+			Splay new node to root.
+
+		4.	Entry remove(Object k);
+			An entry haveing key k is removed from tree ,as with oridinary BST 
+				If X be the node removed from the tree.
+				Splay X's parent to the root.
+				Recall that the node containing k is removed if it has zero or
+			one children.  If it has two children, the node with the next higher key is
+				removed instead 		
+
+	Rdandomized Algorithms
+
+			that make decisions based on rolls of the dice.Helps keep running time low.
+
+			Quicksort,quickselect, hash tables w/random hashcode.	
+
+			Expectation
+				x() filps a coin 
+					heads:one second to execute.
+					tails:3 seconds to excutes.
+				Let X be running time of one call to x ().
+				with probability 0.5 X is 1
+				with probability 0.5 X is 3.
+
+				X -> random variable 
+				Expected value of X 
+					E[x] = 0.5 * 1 + 0.5 * 3 = 2 seconds expected time 
+					x();
+					X();
+
+				What is the expected total time E[T]?
+				Linearity of expectiation:
+					E[X+Y]=E[X]+E[Y].
+
+Hash Table 
+	Random hash code maps each possible key to a randomly chosen bucket, but a key's random hashcode never changes.
+	Good model for how a good hash code will peform.
+	Assume hashtable with chaining, no duplicate keys. 
+	Perform find(k).  k hashes to a bucket b.
+	Cost of the search is $1 + $1 for every entry in bucket b whose key is not k.
+	suppose there are n keys in table besides k.
+	V1, V2,... Vn: random variables of K
+	for each ki,  Vi=1 if ki hashes to bucket b 
+
+	Assume N buckets 
+	Each key has probability 1/N hashing to bucket b.
+
+	E[T] = 1 + n/N,
+
+	The same analysis applies to insert and remove operations.  All three hash
+		table operations take O(1)       expected                amortized time 
+									hash code&collisions 		resizing 
+
+	Quicksort 
+			 	mergesort 
+
+	Quicksort spends linear time of each level ( partioning lists)		 									
+			(linear in # of boxes).
+
+	Analyze expected depth one input key will reach.		
+	Assume no 2 keys are equal.
+	Random pivot: equally likely to be smallest key, second smallest ,third, ..., or largest. 
+	
+
+GARBAGE COLLECTION	
+
+	The java virtual machine (JVM) that runs your program
+
+	uses hidden data structures to manage memory.
+
+Roots and Reachability
+
+	An object your program might use again: live. Opposite is garbage- objects your program cannot reference again.
+
+Root: any reference your program can access direclty.
+	local variable on stack.
+	class variable                  only reference variables.
+
+Object is live if 
+	 referenced by a root, or 
+	 reference by a field in another live object.
+
+	i.e. reachable from the roots.
+
+	Garbage collectors run DFS from the roots, 
+
+	Every object has a "visited" tag, invisible to your program.
+
+Memoery Addresses 
+	memory is array of bytes with addresses.
+----------------------------
+|   |   |   |   |   |   |   ...
+----------------------------
+  0   1   2   3  4    5   6
+
+	Declare local variable <- naming a memory location.
+	(java picks the address)
+
+	Memory address = pointers 
+
+Mark & Sweep Garbage Collection
+
+	2 phases.
+
+	Mark phase does a dfs from every root; marks all live objects.
+
+	Sweep phase does pass over all object in memory. 
+		Garbage is reclaimed.
+
+		JVM  data structure keeps track of free & allocate memory.
+
+Compaction 
+	
+	Fragmentation: tendency of free memory to get broken up into small piece. unable to allocate a large object despite lots of free memroy
+
+	A compacting garbage collector moves object during sweep phase.
+
+	References 
+		In sun JVM, a reference is a handle. A handle is a pointer to a pointer.
+		The "second pointers" are kept in a special tables.
+			reference reference reference 
+
+Copying Garbage Collection
+	memory is divided into 2 spaces, old spare & new space. 
+	Finds live object by dfs,
+		when it encounter object in old spaces, it immediately moves i to new space. Compation included .		
+	Next time, new space is relabeled "old" space, old space is relabeled "new space".
+
+	Advantage: fast 
+	Disadvantage: memory cut in half.
+
+Generational Garbage Collection
+
+most objects allocated by most programs have short lifetimes, while a few go on to survive through many garbage collection
+
+A generational collector has 2 or more generations.
+	can be different sizes.
+	can change size.
+
+sun 1.3 JVM
+	
+	Minor collections: frequent; only affect young generation
+	major collections : cover all objects.
+
+	special table of references from old objects to young is added to the roots for minor collections.
+
+AUGMENTING DATA STRUCTURES
+	pj3: set E of edges is hash & table adjacency list 
+
+	2-3-4 Trees with Fast Neighbors
+
+	No duplicate keys. 
+
+	Given key k, determine whether k is in tree & what next smaller & larger keys are ,in O(1)time.
+
+	Combine 2-3-4 tree with hash table.
+
+	Maps key to record w/next smaller & larger keys .
+
+	insert: determine by tree search in O(logn) time what next smaller/larger keys are.
+			update all 3 keys records in hashtable ; O(1)time.
+
+	Splay Trees with Node Information
+			like the size and height of each subtree at each node
+
+		We can answer the query "How many keys are there between x and y?" in O(logn) amortized time
+
+		Strategy: set c =n . Deduct from c # of keys outside the range [x,y].
+		find(x);//keys in root's left subtree are all less than x.
+
+		 c=c-size (root's left subtree);
+		 	if(root key < x){
+		 	c--;  //possible
+		 	}
+
+		 finx(y);	
+		 c=c-size(root's right subtree)
+		 if(root key >y){
+		 c--;
+		 }
+		 now,c is # of keys
