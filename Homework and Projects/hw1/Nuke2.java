@@ -6,7 +6,7 @@ class Nuke2{
 	 	BufferedReader keyboard;
 	 	String inputline;
 	 	keyboard=new BufferedReader(new InputStreamReader(System.in));
-	 	 System.out.print("Please enter a string: ");
+	 	System.out.print("Please enter a string: ");
     	System.out.flush();        /* Make sure the line is printed immediately. */
 	 	inputline=keyboard.readLine();
 	 	StringBuilder sb=new StringBuilder(inputline);
