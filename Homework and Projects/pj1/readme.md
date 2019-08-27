@@ -1,5 +1,7 @@
-CS 61B Project 1 Color Images, Edge Detection, and Run-Length Encodings
-Due midnight Saturday, February 22, 2014
+# CS 61B Project 1 Color Images, Edge Detection, and Run-Length Encodings
+
+ # Due midnight Saturday, February 22, 2014
+
 Warning:  This project is time-consuming.  Start early.
 
 This is an individual assignment; you may not share code with other students.
@@ -17,16 +19,18 @@ convert an image into a run-length encoding and back.
 Each image is a rectangular matrix of color pixels, which are indexed as
 follows (for a 4x3 image):
 
-									
+​									
 
+```
+											------> x
+​                 |   -----------------------------
+​                 |   | 0, 0 | 1, 0 | 2, 0 | 3, 0 |
+​               y |   -----------------------------
+​                 |   | 0, 1 | 1, 1 | 2, 1 | 3, 1 |
+​                 v   -----------------------------
+​                     | 0, 2 | 1, 2 | 2, 2 | 3, 2 |
+```
 
-                      ------> x
-•                 |   -----------------------------
-•                 |   | 0, 0 | 1, 0 | 2, 0 | 3, 0 |
-•               y |   -----------------------------
-•                 |   | 0, 1 | 1, 1 | 2, 1 | 3, 1 |
-•                 v   -----------------------------
-•                     | 0, 2 | 1, 2 | 2, 2 | 3, 2 |
 Note that the origin is in the upper left; the x-coordinate increases as you
 move right, and the y-coordinate increases as you go down.  (This conforms to
 Java's graphics commands, though you won't need to use them directly in this
@@ -41,6 +45,7 @@ has a "byte" integer type, its range is -128...127, so we will usually use
 Java's "short" type for methods that take RGB parameters or return RGB values.
 
 Part I:  Image Blurring and Edge Detection
+==========================================
 This part is worth 40% of your total score.  (8 points out of 20).
 
 Implement a class called PixImage that stores a color image.  The PixImage
@@ -51,7 +56,7 @@ prototypes for the public methods the class offers.  You are required to
 provide implementations of all these methods.
 
 A PixImage is described by its size and the RGB values of each pixel, but it is
-up to you to decide how a PixImage stores a color image.  You should
+up to you to decide _how_ a PixImage stores a color image.  You should
 certainly use one or more arrays; otherwise, you have some freedom to choose
 the details.
 
@@ -60,7 +65,7 @@ change afterwards.  There is one PixImage constructor, which takes two integers
 as input, representing the width and height of the image, and returns an image
 of the specified size.  For example, the statement
 
-    PixImage image = new PixImage(w, h);
+​    PixImage image = new PixImage(w, h);
 
 should create a w x h Image object.  In your implementation, you may define any
 fields, additional methods, additional classes, or other .java files you wish,
@@ -103,7 +108,7 @@ boxBlur() should return "this" PixImage (rather than construct a new PixImage).
 If numIterations is positive, the return value is a newly constructed PixImage
 showing what "this" PixImage would become after being blurred "numIterations"
 times.  IMPORTANT:  each iteration of blurring should be writing to a
-different PixImage than the one produced by the previous iteration.  You
+_different_ PixImage than the one produced by the previous iteration.  You
 should NEVER be reading and writing pixels in the same image simultaneously,
 and you will get the wrong answer if you try.
 
@@ -124,17 +129,17 @@ on the red intensities of the pixels.)  If two regions of very different red
 intensities meet at the pixel (x, y), then (gx, gy) is a long vector that is
 roughly perpendicular to the boundary where the constrasting regions meet.
 
-We compute the red gradient (gx, gy) with the following convolutions.
+We compute the red gradient (gx, gy) with the following _convolutions_.
 
-
-         --------------     ----------------------------------------------
+```
+				 --------------     ----------------------------------------------
          | 1 | 0 | -1 |     | x - 1, y - 1 |   x  , y - 1 | x + 1, y - 1 |
          --------------     ----------------------------------------------
     gx = | 2 | 0 | -2 |  *  | x - 1,   y   |   x  ,   y   | x + 1,   y   |
          --------------     ----------------------------------------------
          | 1 | 0 | -1 |     | x - 1, y + 1 |   x  , y + 1 | x + 1, y + 1 |
          --------------     ----------------------------------------------
-​
+
          ----------------   ----------------------------------------------
          |  1 |  2 |  1 |   | x - 1, y - 1 |   x  , y - 1 | x + 1, y - 1 |
          ----------------   ----------------------------------------------
@@ -142,6 +147,12 @@ We compute the red gradient (gx, gy) with the following convolutions.
          ----------------   ----------------------------------------------
          | -1 | -2 | -1 |   | x - 1, y + 1 |   x  , y + 1 | x + 1, y + 1 |
          ----------------   ----------------------------------------------
+```
+
+
+
+----------------   ----------------------------------------------
+
 The boxes on the right store the red pixel intensities for the neighbors of (x,
 y).  The convolution operation "*" simply means that we multiply each box on
 the left with the corresponding box on the right, then sum the nine products.
@@ -153,14 +164,14 @@ defined likewise.
 http://en.wikipedia.org/wiki/Sobel_operator .)
 
 This gives us three gradient vectors for each pixel (red, green, and blue).
-Define the energy of a gradient vector (gx, gy) to be the square of its
+Define the _energy_ of a gradient vector (gx, gy) to be the square of its
 length; by Pythagoras' Theorem, the energy is gx * gx + gy * gy.  Define the
-energy of a pixel to be the sum of its red, green, and blue energies.
+_energy_ of a pixel to be the sum of its red, green, and blue energies.
 (If you think of a pixel's three gradients together as being a vector in
 a six-dimensional space, the pixel's energy is the square of the length of that
 six-dimensional vector.)
 
-    energy(x, y) = gx(red)^2 + gy(red)^2 + gx(green)^2 + gy(green)^2 +
+​    energy(x, y) = gx(red)^2 + gy(red)^2 + gx(green)^2 + gy(green)^2 +
 ​                   gx(blue)^2 + gy(blue)^2.
 
 IMPORTANT:  You must compute the energy EXACTLY.  The pixel intensities are of
@@ -183,7 +194,7 @@ In your output PixImage, set the red, green, and blue intensities of the pixel
 (x, y) to be the value mag2gray(energy(x, y)).
 
 Pixels on the boundary of the output image require special treatment, because
-they do not have nine neighbors.  We treat them by reflecting the image
+they do not have nine neighbors.  We treat them by _reflecting_ the image
 across each image boundary.  (Imagine the image is sitting right on the shore
 of a lake, so an upside-down copy of the image is reflected below it.)  Thus,
 we treat the pixel (-1, 2) as if it had the same RGB intensities as (0, 2), and
@@ -198,7 +209,7 @@ detector, so you don't have to think about it again.)
 We have provided Java classes to help you see your output images and debug your
 implementation of Part I, in these files:
 
-    Blur.java
+​    Blur.java
 ​    Sobel.java
 
 The main() methods in these classes read an image in TIFF format, use your code
@@ -207,7 +218,7 @@ format, and display the input and output images.  You will need to compile them
 against the JAI image libraries in the .jar files we have included, which
 may require you to add the .jar files to your "classpath".  In Unix:
 
-    javac -cp "jai_core.jar:jai_codec.jar" *.java
+​    javac -cp "jai_core.jar:jai_codec.jar" *.java
 
 Both programs take one or two command-line arguments.  The first argument
 specifies the name of an input image file in TIFF format.  (If you specify no
@@ -215,7 +226,7 @@ arguments, the programs will remind you how to use them.)  The optional second
 argument specifies the number of iterations of your box blurring filter to
 perform.  For example, if you run
 
-    java -cp ".:jai_core.jar:jai_codec.jar" Blur image.tiff 3
+​    java -cp ".:jai_core.jar:jai_codec.jar" Blur image.tiff 3
 
 then Blur will load the image from image.tiff, perform three iterations of
 blurring, write the blurred image to a file named blur_image.tiff, and display
@@ -227,7 +238,7 @@ iterations of blurring prior to edge detection.  A small amount of blurring
 tends to make edge detection more robust in images whose lines of contrast are
 not very sharp.  If you run
 
-    java Sobel image.tiff 5
+​    java Sobel image.tiff 5
 
 then Sobel will load the image from image.tiff, perform five iterations of
 blurring, perform Sobel edge detection on the blurred image, write the blurred
@@ -248,8 +259,8 @@ necessary to complete the project, but if you want more control over writing
 images to files for your own entertainment, it is easy to modify Blur.java or
 Sobel.java for that purpose.
 
-
 Part II:  Converting a Run-Length Encoding to an Image
+======================================================
 This part is worth 25% of your total score.  (5 points out of 20).
 
 A large number of large image files can consume a lot of disk space.  Some
@@ -257,14 +268,14 @@ PixImages can be stored more compactly if we represent them as "run-length
 encodings."  Imagine taking all the rows of pixels in the image, and connecting
 them into one long strip.  Think of the pixels as being numbered thusly:
 
+											-----------------------------
+	                    |   0  |   1  |   2  |   3  |
+	                    -----------------------------
+	                    |   4  |   5  |   6  |   7  |
+	                    -----------------------------
+	                    |   8  |   9  |  10  |  11  |
+	                    -----------------------------
 
-                    -----------------------------
-                    |   0  |   1  |   2  |   3  |
-                    -----------------------------
-                    |   4  |   5  |   6  |   7  |
-                    -----------------------------
-                    |   8  |   9  |  10  |  11  |
-                    -----------------------------
 Some images have long strips of pixels of the same color (RGB intensities).
 In particular, the grayscale images produced by sobelEdges() can have large
 uniform regions, especially where no edges are detected.  Run-length encoding
@@ -272,18 +283,17 @@ is a technique in which a strip of identical consecutive pixels (possibly
 spanning several rows of the image) are represented as a single record or
 object.  For instance, the following strip of intensities:
 
-
-        ------------------------------------------------------
-        | 7 | 7 | 7 | 88 | 88 | 88 | 88 | 88 | 0 | 0 | 0 | 0 |
-        ------------------------------------------------------
-              0   1   2    3    4    5    6    7   8   9   10  11
+					------------------------------------------------------
+	        | 7 | 7 | 7 | 88 | 88 | 88 | 88 | 88 | 0 | 0 | 0 | 0 |
+	        ------------------------------------------------------
+​              0   1   2    3    4    5    6    7   8   9   10  11
 
 could be represented with just three records, each representing one "run":
 
+													 --------------------
+	                         | 7,3 | 88,5 | 0,4 |
+	                         --------------------
 
-                         --------------------
-                         | 7,3 | 88,5 | 0,4 |
-                         --------------------
 "7,3" means that there are three consecutive 7's, followed by "88,5" to signify
 five consecutive 88's, and then "0,4" for four jet black pixels.  With this
 encoding, a huge image whose pixels are mostly one color (like daily comic
@@ -362,8 +372,8 @@ We will test your code by calling your public methods directly.
 There is a bit of test code for Parts II, III, and IV in the main() method of
 RunLengthEncoding.java.
 
-
 Part III:  Converting an Image to a Run-Length Encoding
+=======================================================
 This part is worth 25% of your total score.  (5 points out of 20).
 
 Write a RunLengthEncoding constructor that takes a PixImage object as its sole
@@ -374,7 +384,7 @@ constructor will rely upon the getWidth(), getHeight(), getRed(), getGreen(),
 and getBlue() methods.
 
 Testing
-
+-------
 The following is worth 1 point out of the 5, but should probably be done as
 soon as you can during Part III.
 
@@ -383,13 +393,13 @@ which walks through your run-length encoding and checks its validity.
 Specifically, it should print a warning message if any of the following
 problems are found:
 
+    - If two consecutive runs have exactly the same type of contents.
+      For instance, a "99,12" run followed by an "99,8" run is illegal, because
+      they should have been consolidated into a single run of twenty 99's.
+    - If the sum of all the run lengths doesn't equal the size (in pixels) of
+      the PixImage; i.e. its width times its height.
+    - If a run has a length less than 1.
 
-- If two consecutive runs have exactly the same type of contents.
-  For instance, a "99,12" run followed by an "99,8" run is illegal, because
-  they should have been consolidated into a single run of twenty 99's.
-- If the sum of all the run lengths doesn't equal the size (in pixels) of
-  the PixImage; i.e. its width times its height.
-- If a run has a length less than 1.
 You may find that the check() method is very useful in helping to debug your
 RunLengthEncoding() constructors and setPixel() in Part IV.  I also recommend
 implementing a toString() method for your RunLengthEncoding so you can print
@@ -406,8 +416,8 @@ You might find it interesting to compare the sizes of the two TIFF files.  (Not
 surprisingly, the disparity is greatest for the input file black.tiff, which is
 all black pixels.)
 
-
 Part IV:  Changing a Pixel in a Run-Length Encoding
+===================================================
 The last part is the hardest, but it is only worth 10% of the total score
 (2 points out of 20), so don't panic if you can't finish it.
 
@@ -428,7 +438,7 @@ then convert back to a run-length encoding; not only is that much too slow, it
 will be considered CHEATING and punished accordingly.
 
 Test Code
-
+---------
 We are still working on an autograder for the project, and will provide it when
 it is ready.  Until then, there is some test code in the main() methods of both
 PixImage and RunLengthEncoding, and the programs Blur and Sobel can also help.
@@ -440,8 +450,8 @@ subtracted if you break some of the rules stated above, especially the rules on
 where you must use arrays and where you must use linked lists.
 
 Submitting your Solution
-
-Make sure that your program compiles and runs on the lab machines with the
+------------------------
+Make sure that your program compiles and runs on the _lab_ machines with the
 autograding program before you submit it.  Change (cd) to your pj1 directory,
 which should contain PixImage.java, RunLengthEncoding.java, RunIterator.java,
 and any other .java files you wish to submit.  If your implementation uses
@@ -458,7 +468,7 @@ If your submission is late, you will lose 1% of your earned score for every two
 hours (rounded up) your project is late.
 
 Afterthought
-
+------------
 Our own John Canny, a professor right here in the Berkeley CS department,
 invented an "optimal" edge detector, which is a more sophisticated version of
 what we've done in this project.  If you're interested, see the Wikipedia page
