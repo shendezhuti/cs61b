@@ -331,7 +331,7 @@ Part III  (3 points)
 > when they are first created.  Your LockDListNode constructor(s) should call a
 > DListNode constructor to avoid code duplication.
 
-思路：在LockDListNode中设置布尔类型的islocked
+思路：在LockDListNode中定义布尔类型的islocked属性
 
 ```java
 public class LockDListNode extends DListNode{
