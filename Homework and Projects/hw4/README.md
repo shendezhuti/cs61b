@@ -369,7 +369,7 @@ public class LockDList extends DList{
   
   	public void remove(DListNode node) {
 			if(((LockDListNode)node).isLocked) return;
-      super.remove(node);   
+      super.remove(node);   //上课说只有构造器才必须把super放在第一行，method好像没有这个规定？那肯定是我不仔细了
     }
   
   	public void lockNode(DListNode node) {
