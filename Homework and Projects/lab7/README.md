@@ -87,3 +87,8 @@ The Java Debugger Tutorial
 这里上面主要介绍如何用emacs去debug 那么现在好像没看到过身边有人用emacs了。。。
 
 划水lab
+
+可以直接一些ide进行debug
+其实bug很简单，一看就会发现 1/2 的结果不是0.5而是0
+>
+>
