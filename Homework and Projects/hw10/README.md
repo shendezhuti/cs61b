@@ -55,18 +55,18 @@ Part I  (8 points)
 >
 > Warning:  Do not confuse & with &&.  && will not do bit masking.
 
-本次作业加深了对counting sort 和radix sort的理解！！**只有自己做作业才知道自己有多菜，要继续努力！！注意点以及思路**
-(1)readme.pdf提到本次容器中待排序的数字都是 base-16 digit，就是16进制的意思，可以看到在main方法中有一个测试输入，并且有 Integer.parseInt()方法。
-(2)由于int是32位的，whichDigit这个变量在0-7之间。因此给某个指定的whichDigit变量，我们就对这个整个32位int数组中的某4位进行排序，比如whichDigit=0,我们就是对32位的前4位进行排序。
-这里要注意一点，我们所说的32位是以2进制的标准来看的，如果以16进制来看，int类型变量只有8位。
-(3) 我们在counting sort 方法里要新构建三个数组(实际上也可以只用2个，但是为了我们自己画图便于理解算法的思路，我们用三个数组）
-第一个是AfterBit数组，长度为keys.length。这个数组是存放了所有即将被排序的32位数，并将其转换为4位数的临时数组。 AfterBit数组将32位数转化为4位数的处理方式是  afterBit*=(keys>>(whichDigit\*4))&15;*
-第二个是count数组，长度为16。为什么是16，一个四位的二进制的范围是0-15，因此count数组的长度是16。这个count数组代表AfterBit数组中的元素 的 某个指定数 之前所有的数字总和。
-感觉讲的不是很清楚，但是如果我们自己理解了counting sort的原理，去画个图，上面的拗口的语句就能理解。
+本次作业加深了对counting sort 和radix sort的理解！！**只有自己做作业才知道自己有多菜，要继续努力！！注意点以及思路**  
+(1)readme.pdf提到本次容器中待排序的数字都是 base-16 digit，就是16进制的意思，可以看到在main方法中有一个测试输入，并且有 Integer.parseInt()方法。  
+(2)由于int是32位的，whichDigit这个变量在0-7之间。因此给某个指定的whichDigit变量，我们就对这个整个32位int数组中的某4位进行排序，比如whichDigit=0,我们就是对32位的前4位进行排序。  
+这里要注意一点，我们所说的32位是以2进制的标准来看的，如果以16进制来看，int类型变量只有8位。  
+(3) 我们在counting sort 方法里要新构建三个数组(实际上也可以只用2个，但是为了我们自己画图便于理解算法的思路，我们用三个数组）  
+第一个是AfterBit数组，长度为keys.length。这个数组是存放了所有即将被排序的32位数，并将其转换为4位数的临时数组。 AfterBit数组将32位数转化为4位数的处理方式是  afterBit*=(keys>>(whichDigit\*4))&15;*  
+第二个是count数组，长度为16。为什么是16，一个四位的二进制的范围是0-15，因此count数组的长度是16。这个count数组代表AfterBit数组中的元素 的 某个指定数 之前所有的数字总和。  
+感觉讲的不是很清楚，但是如果我们自己理解了counting sort的原理，去画个图，上面的拗口的语句就能理解。  
 
-第三个数组是我们的result 数组，长度就是keys.length。用于存放返回的结果 
+第三个数组是我们的result 数组，长度就是keys.length。用于存放返回的结果   
 
-(4)完成了counting sort以后，在radix sort中我们就可以利用写好的counting sort。循环内传入输入数组，whichDigit的变量从0到7。这样就得到了最后的排序数组。
+(4)完成了counting sort以后，在radix sort中我们就可以利用写好的counting sort。循环内传入输入数组，whichDigit的变量从0到7。这样就得到了最后的排序数组。  
 
 ```java
 /**
